@@ -1,11 +1,12 @@
 package main
 
 import (
-	"github.com/k-mistele/ccdc-scoreserver/lib"
+	"fmt"
+	"github.com/k-mistele/ccdc-scoreserver/lib/service"
 	"github.com/labstack/echo/v4"
-	"log"
 	"html/template"
 	"io"
+	"log"
 	"net/http"
 )
 
@@ -31,16 +32,20 @@ func main() {
 	// DEFINE A ROUTE
 	e.GET("/", func(c echo.Context) error {
 
-		var s = lib.Service {
-			Host: "127.0.0.1",
-			Port: 8080,
-			Name: "Score Server",
+		var s = service.Service{
+			Host:              "127.0.0.1",
+			Port:              8081,
+			Name:              "Score Server HTTP",
 			TransportProtocol: "tcp",
-			Username: "admin",
-			Password: "admin",
-			ServiceCheckType: "tcp",
-			ServiceCheckData: nil,
+			Username:          "",
+			Password:          "",
+			ServiceCheck:      service.HTTPGetStatusCodeCheck,
+			ServiceCheckData:  make(map[string]string),
+			Points:            10,
 		}
+		s.ServiceCheckData["url"] = fmt.Sprintf("http://%s:%d/url", s.Host, s.Port)
+		s.ServiceCheckData["expectedContent"] = "failed"
+
 
 		isAlive, err := s.DispatchServiceCheck()
 		if err != nil {
@@ -49,6 +54,9 @@ func main() {
 
 		log.Printf("Service %s is alive? %t", s.Name, isAlive)
 		return c.String(http.StatusOK, "Welcome to Kyle's CCDC Score Server")
+	})
+	e.GET("/url", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Check completed successfully!")
 	})
 
 	e.Static("/assets", "assets")
