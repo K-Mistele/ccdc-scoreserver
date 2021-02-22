@@ -33,10 +33,10 @@ func (s Service) DispatchServiceCheck() (bool, error) {
 
 // LOG A FAILED SERVICE CHECK
 func (s Service) CheckFailed() {
-	log.Infof("Service check for %s failed\n", s.Name)
+	log.Infof("Score check for service \"%s\" failed\n", s.Name)
 }
 
 // LOG A SUCCESSFUL CHECK
 func (s Service) CheckPassed() {
-	log.Infof("Service check for %s succeeded\n", s.Name)
+	log.Infof("Score check for service \"%s\" succeeded\n", s.Name)
 }

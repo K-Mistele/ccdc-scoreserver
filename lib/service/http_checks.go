@@ -35,6 +35,8 @@ func HTTPGetStatusCodeCheck(s *Service) (bool, error) {
 	// RUN THE GET REQUEST
 	response, err = http.Get(url)
 	if err != nil {
+		log.Infof("unable to HTTP GET %s with expected code %d\n", url, expectedCode)
+		log.Error(err)
 		s.CheckFailed()
 		return false, err
 	}

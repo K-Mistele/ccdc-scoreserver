@@ -63,7 +63,7 @@ func main() {
 
 		var s = service.Service{
 			Host:              "127.0.0.1",
-			Port:              8081,
+			Port:              8080,
 			Name:              "Score Server HTTP",
 			TransportProtocol: "tcp",
 			Username:          "",
@@ -74,17 +74,11 @@ func main() {
 		}
 		s.ServiceCheckData["url"] = fmt.Sprintf("http://%s:%d/url", s.Host, s.Port)
 		s.ServiceCheckData["expectedContent"] = "failed"
+		s.ServiceCheckData["expectedCode"] = "200"
 
-		isAlive, err := s.DispatchServiceCheck()
-		if err != nil {
-			log.Errorf("Failed while trying to perform check on %s\n", s.Name)
-		}
+		_, _ = s.DispatchServiceCheck()
 
-		if isAlive {
-			log.Infof("Service \"%s\" is alive\n", s.Name)
-		} else {
-			log.Infof("Service \"%s\" is not alive\n", s.Name)
-		}
+
 		return c.String(http.StatusOK, "Welcome to Kyle's CCDC Score Server")
 	})
 	e.GET("/url", func(c echo.Context) error {
