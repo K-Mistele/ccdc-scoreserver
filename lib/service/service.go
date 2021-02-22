@@ -1,8 +1,11 @@
 package service
 
 import (
-	"log"
+
+	logging "github.com/op/go-logging"
 )
+
+var log = logging.MustGetLogger("main")
 
 // DEFINE A TYPE OF FUNCTION THAT TAKES A SERVICE AS A PARAM
 type ServiceCheck func(s *Service) (bool, error)
@@ -30,10 +33,10 @@ func (s Service) DispatchServiceCheck() (bool, error) {
 
 // LOG A FAILED SERVICE CHECK
 func (s Service) CheckFailed() {
-	log.Printf("Service check for %s failed\n", s.Name)
+	log.Infof("Service check for %s failed\n", s.Name)
 }
 
 // LOG A SUCCESSFUL CHECK
 func (s Service) CheckPassed() {
-	log.Printf("Service check for %s succeeded\n", s.Name)
+	log.Infof("Service check for %s succeeded\n", s.Name)
 }

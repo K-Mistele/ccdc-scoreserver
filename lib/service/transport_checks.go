@@ -2,8 +2,8 @@ package service
 
 import (
 	"fmt"
-	"log"
 	"net"
+
 )
 
 // CHECK IF A TCP CONNECTION CAN BE ESTABLISHED
@@ -13,7 +13,7 @@ func SimpleTCPCheck(s *Service) (bool, error) {
 
 	// IF THERE'S AN ERROR, RETURN FALSE AND THE ERROR
 	if err != nil {
-		log.Printf("Error on service check %s -  %s:%s - %s\n", s.Name, s.Host, s.Port, err)
+		s.CheckFailed()
 		return false, err
 	} else {
 		tcpConnection.Close()
