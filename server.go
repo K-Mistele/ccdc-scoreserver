@@ -69,7 +69,7 @@ func main() {
 			Username:          "",
 			Password:          "",
 			ServiceCheck:      service.HTTPGetStatusCodeCheck,
-			ServiceCheckData:  make(map[string]string),
+			ServiceCheckData:  make(map[string]interface{}),
 			Points:            10,
 		}
 		s.ServiceCheckData["url"] = fmt.Sprintf("http://%s:%d/url", s.Host, s.Port)
