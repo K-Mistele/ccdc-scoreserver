@@ -105,7 +105,8 @@ func HTTPGetContentsCheck(s *Service) (bool, error) {
 }
 
 // TYPE ServiceCheck
-// ServiceCheckData: url, data, headers (should include content type and accept), expectedString
+// ServiceCheckData: url: string, data: callback(s* Service),
+// 		headers map[string]string (should include content type and accept), expectedString
 func HTTPPostContentsCheck(s *Service) (bool, error) {
 	var url, expectedString string
 	var data []byte
@@ -175,8 +176,6 @@ func HTTPPostContentsCheck(s *Service) (bool, error) {
 		s.CheckFailedWithReason("Response didn't contain expected string")
 		return false, nil
 	}
-
-	// TODO TEST ME
 
 
 }
