@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/k-mistele/ccdc-scoreserver/lib/service"
 	"github.com/labstack/echo/v4"
 	logging "github.com/op/go-logging"
@@ -19,7 +18,7 @@ var log = logging.MustGetLogger("main")
 // which is dependent on the log level. Many fields have a custom output
 // formatting too, eg. the time returns the hour down to the milli second.
 var format = logging.MustStringFormatter(
-	`%{color}%{time:15:04:05.000} ▶ %{level:.4s} %{id:03x}%{color:reset} %{message}`,
+	`%{color}%{time:15:04:05.000} %{level:.4s} ▶ %{shortfunc} ▶ %{id:03x}%{color:reset} %{message}`,
 )
 
 // FOR TEMPLATING
@@ -62,19 +61,16 @@ func main() {
 	e.GET("/", func(c echo.Context) error {
 
 		var s = service.Service{
-			Host:              "127.0.0.1",
-			Port:              8080,
-			Name:              "Score Server HTTP",
+			Host:              "10.0.1.56",
+			Port:              9000,
+			Name:              "MinIO S3 Bucket",
 			TransportProtocol: "tcp",
-			Username:          "",
-			Password:          "",
-			ServiceCheck:      service.HTTPGetStatusCodeCheck,
-			ServiceCheckData:  make(map[string]interface{}),
+			Username:          "minioadmin",
+			Password:          "minioadmin",
+			ServiceCheck:      service.MinioBucketCheck,
+			ServiceCheckData:  nil,
 			Points:            10,
 		}
-		s.ServiceCheckData["url"] = fmt.Sprintf("http://%s:%d/url", s.Host, s.Port)
-		s.ServiceCheckData["expectedContent"] = "failed"
-		s.ServiceCheckData["expectedCode"] = "200"
 
 		_, _ = s.DispatchServiceCheck()
 

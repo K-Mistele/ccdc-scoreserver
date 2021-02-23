@@ -3,7 +3,6 @@ package service
 import (
 
 	logging "github.com/op/go-logging"
-	"strings"
 )
 
 var log = logging.MustGetLogger("main")
@@ -35,31 +34,17 @@ func (s Service) DispatchServiceCheck() (bool, error) {
 // LOG A FAILED SERVICE CHECK
 func (s Service) CheckFailed() {
 	log.Infof("Score check for service \"%s\" failed\n", s.Name)
-	s.checkFailed()
 }
 
 func (s Service) CheckFailedWithError(err error) {
 	log.Infof("Score check for service \"%s\" failed with error: %s\n", s.Name, err)
-	s.checkFailed()
 }
 
 func (s Service) CheckFailedWithReason(msg string) {
 	log.Infof("Score check for service \"%s\" failed with reason: %s\n", s.Name, msg)
-	s.checkFailed()
 }
 
 // LOG A SUCCESSFUL CHECK
 func (s Service) CheckPassed() {
 	log.Infof("Score check for service \"%s\" succeeded\n", s.Name)
-	s.checkPassed()
-}
-
-// ACTUALLY UPDATE SCORING
-func (s Service) checkFailed() {
-
-}
-
-// ACTUALLY UPDATE SCORING
-func (s Service) checkPassed() {
-
 }
