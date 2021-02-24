@@ -6,6 +6,7 @@ require (
 	github.com/dutchcoders/goftp v0.0.0-20170301105846-ed59a591ce14
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b // indirect
 	github.com/helloyi/go-sshclient v1.0.0
+	github.com/korylprince/go-ad-auth/v3 v3.1.1
 	github.com/kward/go-vnc v0.0.0-20171220234551-a2352a89d118
 	github.com/labstack/echo/v4 v4.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
