@@ -3,6 +3,7 @@ module github.com/k-mistele/ccdc-scoreserver
 go 1.15
 
 require (
+	github.com/helloyi/go-sshclient v1.0.0
 	github.com/labstack/echo/v4 v4.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect
