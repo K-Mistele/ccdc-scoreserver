@@ -1,7 +1,6 @@
 package service
 
 import (
-
 	logging "github.com/op/go-logging"
 	"sync"
 )

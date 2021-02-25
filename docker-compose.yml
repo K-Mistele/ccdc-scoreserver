@@ -1,13 +1,17 @@
 version: "3.3"
 services:
   scoreserver:
-    build: ./server
+    build: ./
     container_name: ccdc-scoreserver
     restart: always
     ports:
       - 8080:8080
     networks:
       - server
+  database:
+    image: mongo:latest
+    container_name: ccdc-scoreserver-database
+    restart: always
 
 networks:
   server:
