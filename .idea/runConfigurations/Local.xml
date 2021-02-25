@@ -1,10 +1,10 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Local" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="ccdc-scoreserver" />
-    <working_directory value="$PROJECT_DIR$" />
+    <working_directory value="$PROJECT_DIR$/server" />
     <go_parameters value="-i" />
     <kind value="FILE" />
-    <filePath value="$PROJECT_DIR$/server.go" />
+    <filePath value="$PROJECT_DIR$/server/server.go" />
     <package value="github.com/k-mistele/ccdc-scoreserver" />
     <directory value="$PROJECT_DIR$" />
     <output_directory value="$PROJECT_DIR$/.out" />

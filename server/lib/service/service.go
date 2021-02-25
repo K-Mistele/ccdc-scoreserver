@@ -19,9 +19,9 @@ type Service struct {
 	TransportProtocol string // STRING, tcp OR udp. POSSIBLY NOT GOING TO BE USED.
 	Username          string
 	Password          string
-	ServiceCheck      ServiceCheck      // STRING THAT'S A SUPPORTED SERVICE CHECK TYPE
+	ServiceCheck      ServiceCheck           // STRING THAT'S A SUPPORTED SERVICE CHECK TYPE
 	ServiceCheckData  map[string]interface{} // DEPENDS ON THE DATA REQUIRED BY THE CHECK, HENCE MAP
-	Points int
+	Points            int
 }
 
 // SERVICE METHODS

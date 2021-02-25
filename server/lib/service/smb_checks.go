@@ -2,7 +2,6 @@ package service
 
 import (
 	"fmt"
-	"github.com/hirochachacha/go-smb2"
 	"net"
 )
 

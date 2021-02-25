@@ -143,8 +143,8 @@ func HTTPGETContent(s *Service) (bool, error) {
 
 // CREATE A MAP THAT MAPS STRINGS TO SERVICECHECK FUNCTIONS
 var checks = map[string]ServiceCheck{
-	"tcp":           SimpleTCPCheck,
-	"http/get/code": HTTPGETStatusCode,
+	"tcp":              SimpleTCPCheck,
+	"http/get/code":    HTTPGETStatusCode,
 	"http/get/content": HTTPGETContent,
 }
 

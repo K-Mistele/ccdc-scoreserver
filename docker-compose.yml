@@ -1,0 +1,13 @@
+version: "3.3"
+services:
+  scoreserver:
+    build: ./server
+    container_name: ccdc-scoreserver
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - server
+
+networks:
+  server:
