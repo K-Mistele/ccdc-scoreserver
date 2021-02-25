@@ -12,6 +12,8 @@ services:
     image: mongo:latest
     container_name: ccdc-scoreserver-database
     restart: always
+    networks:
+      - server
 
 networks:
   server:

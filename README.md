@@ -13,6 +13,10 @@ Enjoy!
 
 ## Running with Go
 Note: requires a newish version of go that supports go modules. I used 1.15. 
+This also requires having mongo installed locally, 0/10 don't recommend. Use `docker-compose` (below)
+Also - in `lib/database/database.go`, change the connection string so it's localhost instead of the container name. 
+
+Wouldn't really recommend doing this since it can be a pain - just run it from `docker-compose`. Seriously.
 
 ```bash
 go get

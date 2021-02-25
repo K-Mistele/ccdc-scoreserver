@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"github.com/k-mistele/ccdc-scoreserver/lib/scoreboard"
 	"github.com/k-mistele/ccdc-scoreserver/lib/service"
+	"github.com/k-mistele/scoreserver/lib/database"
 	"github.com/labstack/echo/v4"
 	logging "github.com/op/go-logging"
 	"html/template"
@@ -131,6 +133,10 @@ func main() {
 			return c.String(http.StatusForbidden, "Scoring has already been terminated")
 		}
 
+	})
+	e.GET("/test-mongo", func (c echo.Context) error {
+		databases := database.ListDatabases()
+		return c.String(http.StatusOK, fmt.Sprintf("%v", databases))
 	})
 
 	e.Static("/assets", "assets")
