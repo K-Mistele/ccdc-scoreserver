@@ -2,12 +2,18 @@ package service
 
 import (
 	"fmt"
+	"github.com/hirochachacha/go-smb2"
 	"net"
 )
 
 // TYPE ServiceCheck
 // PARAMS NONE
 func SMBListSharesCheck(s *Service) (bool, error) {
+
+	if s.Username == "" {
+		s.CheckFailedWithReason("SMB username is null - this is not supported!")
+		return false, nil
+	}
 
 	// BUILD A TCP CONNECTION
 	address := fmt.Sprintf("%s:%d", s.Host, s.Port)
@@ -28,7 +34,7 @@ func SMBListSharesCheck(s *Service) (bool, error) {
 
 	// MAKE THE SMB CONNECTION W/ CONFIGURED AUTH
 	smbConn, err := smbDialer.Dial(conn)
-	if err != nil {
+	if err != nil || smbConn == nil {
 		s.CheckFailedWithError(err)
 		return false, err
 	}

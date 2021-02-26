@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/k-mistele/ccdc-scoreserver/lib/scoreboard"
 	"github.com/k-mistele/ccdc-scoreserver/lib/service"
-	"github.com/k-mistele/scoreserver/lib/database"
+	"github.com/k-mistele/ccdc-scoreserver/lib/database"
 	"github.com/labstack/echo/v4"
 	logging "github.com/op/go-logging"
 	"html/template"
@@ -62,8 +62,8 @@ func main() {
 		Port:              445,
 		Name:              "Charizard-DC-SMB",
 		TransportProtocol: "tcp",
-		Username:          "",
-		Password:          "",
+		Username:          "Administrator",
+		Password:          "Password1!",
 		ServiceCheck:      service.SMBListSharesCheck,
 		ServiceCheckData:  map[string]interface{}{},
 		Points:            10,
@@ -75,7 +75,7 @@ func main() {
 		Name: 				"Squirtle-VNC",
 		TransportProtocol:  "tcp",
 		Username: 			"",
-		Password:			"",
+		Password:			"password",
 		ServiceCheck:		service.VNCConnectCheck,
 		ServiceCheckData:   nil,
 		Points:				10,

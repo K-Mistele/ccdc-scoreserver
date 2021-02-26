@@ -21,6 +21,7 @@ func NewScoreboard() Scoreboard {
 	return Scoreboard{
 		ScoringTerminated: false,
 		signaller: make(chan state),
+		Services: 	make([]service.Service, 0),
 	}
 }
 // TYPE Scoreboard

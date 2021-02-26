@@ -36,6 +36,7 @@ func (s Service) DispatchServiceCheck(results *map[string]bool, wg *sync.WaitGro
 
 	// NOTIFY THE WAITGROUP THAT WE'RE DONE
 	wg.Done()
+	log.Debug("Service %s check done", s.Name)
 }
 
 // LOG A FAILED SERVICE CHECK
