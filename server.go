@@ -33,6 +33,8 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 
 func main() {
 
+
+
 	// ENABLE LOG LEVELS
 	// For demo purposes, create two backend for os.Stderr.
 	backend1 := logging.NewLogBackend(os.Stderr, "", 0)
@@ -94,10 +96,15 @@ func main() {
 	// DEFINE THE SCOREBOARD
 	e.GET("/", func (c echo.Context) error {
 
+		// GET SERVER TIME
+		tz, _ := time.LoadLocation("America/Chicago")
+
 		data := struct {
-			Scoreboard	scoreboard.Scoreboard
+			TimeStartedAt 				string
+			TimeFinishesAt				string
 		}{
-			Scoreboard: sb,
+			TimeStartedAt: 				time.Unix(sb.TimeStarted, 0).In(tz).Format("15:04"),
+			TimeFinishesAt: 			time.Unix(sb.TimeFinishes, 0).In(tz).Format("15:04"),
 		}
 
 		return c.Render(http.StatusOK, "index.html", data)
