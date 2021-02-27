@@ -115,7 +115,7 @@ func (sb *Scoreboard) runScoreCheck() {
 	var wg sync.WaitGroup
 	var s service.Service
 	var curTime int64
-	curTime = time.Now().Unix()
+	curTime = time.Now().UTC().Unix()
 	var serviceScoreChecks []ServiceScoreCheck
 
 	log.Infof("Running score check")
