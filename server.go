@@ -206,8 +206,8 @@ func main() {
 	})
 
 	e.GET("/test-collections", func (c echo.Context) error {
-		scoreboard.GetAllServiceChecks()
-		scoreboard.GetAllScoreboardChecks()
+		//scoreboard.GetAllServiceChecks()
+		//scoreboard.GetAllScoreboardChecks()
 
 		return c.String(http.StatusOK, "check logs")
 	})
