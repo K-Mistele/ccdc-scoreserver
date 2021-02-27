@@ -10,6 +10,7 @@ require (
 	github.com/korylprince/go-ad-auth/v3 v3.1.1
 	github.com/kward/go-vnc v0.0.0-20171220234551-a2352a89d118
 	github.com/labstack/echo/v4 v4.2.0
+	github.com/labstack/gommon v0.3.0
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	go.mongodb.org/mongo-driver v1.4.6

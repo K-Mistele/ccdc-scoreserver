@@ -5,6 +5,7 @@ import (
 	"github.com/k-mistele/ccdc-scoreserver/lib/scoreboard"
 	"github.com/k-mistele/ccdc-scoreserver/lib/service"
 	"github.com/k-mistele/ccdc-scoreserver/lib/database"
+	view_models "github.com/k-mistele/ccdc-scoreserver/lib/view-models"
 	"github.com/labstack/echo/v4"
 	logging "github.com/op/go-logging"
 	"html/template"
@@ -96,82 +97,11 @@ func main() {
 	// DEFINE THE SCOREBOARD
 	e.GET("/", func (c echo.Context) error {
 
-		// GET SERVER TIME
-		tz, _ := time.LoadLocation("America/Chicago")
-
-		// GET MOST RECENT SCOREBOARD CHECK
-		sbc, err := scoreboard.GetLatestScoreboardCheck()
+		var data view_models.IndexModel
+		data, err := view_models.NewIndexModel(&sb)
 		if err != nil {
-			sbc = scoreboard.ScoreboardCheck{}
+			log.Criticalf("Error building index model: %s", err)
 		}
-
-		// COUNT UP SERVICES AND DOWN SERVICES
-		numberUpServices, numberDownServices := 0, 0
-		for key, _ := range sbc.Scores {
-			if sbc.Scores[key] == true {
-				numberUpServices += 1
-			} else {
-				numberDownServices += 1
-			}
-		}
-		upProgressBarWidth, downProgressBarWidth := 0, 0
-		if len(sb.Services) != 0 {
-			upProgressBarWidth = int((float32(numberUpServices) / float32(len(sb.Services))) * 100)
-			downProgressBarWidth = int((float32(numberDownServices) / float32(len(sb.Services))) * 100)
-		}
-
-		log.Debugf("%d:%d", numberUpServices, numberDownServices)
-
-		// GET TIME STARTED AT
-		var timeStarted, timeFinished string
-		if !sb.Running {
-			timeStarted = "00:00"
-			timeFinished = "00:00"
-		} else {
-			timeStarted = time.Unix(sb.TimeStarted, 0).In(tz).Format("15:04")
-			timeFinished = time.Unix(sb.TimeFinishes, 0).In(tz).Format("15:04")
-		}
-
-
-
-		// DEFINITION OF DATA
-		data := struct {
-			Overview					struct {
-				TimeStartedAt 				string
-				TimeFinishesAt				string
-				NumberUpServices 			int
-				NumberDownServices 			int
-				NumberTotalServices 		int
-				UpProgressBarWidth			int
-				DownProgressBarWidth		int
-			}
-
-			ScoreboardCheck 			scoreboard.ScoreboardCheck
-
-		}{
-			// INSTANTIATION OF DATA
-			Overview: struct {
-				TimeStartedAt 				string
-				TimeFinishesAt				string
-				NumberUpServices 			int
-				NumberDownServices 			int
-				NumberTotalServices			int
-				UpProgressBarWidth			int
-				DownProgressBarWidth		int
-			}{
-				TimeStartedAt: 				timeStarted,
-				TimeFinishesAt: 			timeFinished,
-				NumberUpServices:  			numberUpServices,
-				NumberDownServices:  		numberDownServices,
-				NumberTotalServices:  		len(sb.Services),
-				UpProgressBarWidth:   		upProgressBarWidth,
-				DownProgressBarWidth:       downProgressBarWidth,
-			},
-
-			ScoreboardCheck:  			sbc,
-
-		}
-		log.Debug(data)
 
 		return c.Render(http.StatusOK, "index.html", data)
 	})
