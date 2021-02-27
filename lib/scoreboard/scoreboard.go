@@ -6,8 +6,6 @@ import (
 	"github.com/k-mistele/ccdc-scoreserver/lib/database"
 	"github.com/k-mistele/ccdc-scoreserver/lib/service"
 	logging "github.com/op/go-logging"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
 )
 
@@ -35,29 +33,23 @@ type Scoreboard struct {
 }
 
 func (sb* Scoreboard) ClearScores() {
+
 	// SET UP A CLIENT
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://ccdc-scoreserver-database:27017/"))
-	if err != nil {
-		log.Fatal(err)
-	}
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	err = client.Connect(ctx)
-	if err != nil {
-		log.Fatalf("Error occurred while connecting: %s", err)
-	}
-	defer client.Disconnect(ctx)
+	client, ctx, err := database.GetClient()
+	defer client.Disconnect(*ctx)
 
 	db := client.Database(database.Database)
 	serviceChecks := db.Collection(string(database.ServiceScoreCheck))
 	scoreboardChecks := db.Collection(string(database.ScoreboardCheck))
 
-	if err = serviceChecks.Drop(ctx); err != nil {
-		log.Error("Failed to drop service score checks collection")
+	if err = serviceChecks.Drop(context.TODO()); err != nil {
+		log.Error("Failed to drop service score checks collection: %s", err)
 	}
-	if err = scoreboardChecks.Drop(ctx); err != nil {
-		log.Error("Failed to drop scoreboard checks collection!")
+	if err = scoreboardChecks.Drop(context.TODO()); err != nil {
+		log.Error("Failed to drop scoreboard checks collection: %s", err)
 	}
 }
+
 // START THE SCORING ROUTINE
 // SCORING INTERVAL IS IN SECONDS
 // SCORING DURATION IS hourDuration + minuteDuration
