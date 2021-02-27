@@ -5,6 +5,7 @@ import (
 	"github.com/k-mistele/ccdc-scoreserver/lib/service"
 	"github.com/k-mistele/ccdc-scoreserver/lib/database"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"sync"
 	"time"
 )
@@ -23,19 +24,38 @@ type ServiceScoreCheck struct {
 // STORE ScoreboardCheck TO MONGO
 // GOROUTINE SO STORE NOTHING
 func storeScoreboardCheck(sbc *ScoreboardCheck) {
-	var collection *mongo.Collection
 
+	// CREATE A CLIENT
+	client, err := mongo.NewClient(options.Client().ApplyURI(database.URI))
+	if err != nil {
+		//log.Fatal(err)
+		log.Critical("Failed to store service score checks!")
+		return
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	collection, err := database.GetCollection(database.ScoreboardCheck)
+
+	// CONNECT
+	err = client.Connect(ctx)
 	if err != nil {
-		log.Error("Unable to get collection %s", string(database.ScoreboardCheck))
+		//log.Fatalf("Error occurred while connecting: %s",
+		log.Critical("Failed to store service score checks")
 	}
+	defer client.Disconnect(ctx)
+
+	// GET THE SERVICE SCORE CHECK COLLECTION
+	collection := client.Database(database.Database).Collection(string(database.ScoreboardCheck))
+	if err != nil {
+		log.Error("Unable to get collection %s", string(database.ServiceScoreCheck))
+	}
+
+	log.Debug("Got collection")
 	_, err = collection.InsertOne(ctx, *sbc)
 	if err != nil {
-		log.Errorf("Failed to insert ScoreboardCheck: %s", err)
+		log.Errorf("Failed to insert score checks: %s", err)
 	}
-	log.Debug("Stored scoreBoardCheck")
+
+	log.Debug("Stored serviceChecks")
 
 }
 
@@ -53,13 +73,27 @@ func storeServiceScoreChecks(sscs *[]ServiceScoreCheck) {
 	}
 	log.Debug("Copied slice")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
+
+	// CREATE A CLIENT
+	client, err := mongo.NewClient(options.Client().ApplyURI(database.URI))
+	if err != nil {
+		//log.Fatal(err)
+		log.Critical("Failed to store service score checks!")
+		return
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	log.Debug("Built context")
 
+	// CONNECT
+	err = client.Connect(ctx)
+	if err != nil {
+		//log.Fatalf("Error occurred while connecting: %s",
+		log.Critical("Failed to store service score checks")
+	}
+	defer client.Disconnect(ctx)
 
-
-	collection, err := database.GetCollection(database.ServiceScoreCheck)
+	// GET THE SERVICE SCORE CHECK COLLECTION
+	collection = client.Database(database.Database).Collection(string(database.ServiceScoreCheck))
 	if err != nil {
 		log.Error("Unable to get collection %s", string(database.ServiceScoreCheck))
 	}

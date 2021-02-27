@@ -1,46 +1,84 @@
 package scoreboard
 
 import (
+	"context"
+	"errors"
+	"github.com/k-mistele/ccdc-scoreserver/lib/database"
 	"github.com/k-mistele/ccdc-scoreserver/lib/service"
 	logging "github.com/op/go-logging"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
 )
 
 var log = logging.MustGetLogger("main")
 
 // STATES FOR THE SCORING ROUTINE
-type state string
 
-const (
-	start     state = "started"
-	pause     state = "paused"
-	resume    state = "resumed"
-	terminate state = "terminated"
-)
 func NewScoreboard() Scoreboard {
 	return Scoreboard{
-		ScoringTerminated: false,
-		signaller: make(chan state),
-		Services: 	make([]service.Service, 0),
+		stopSignaller: 			make(chan bool),
+		Services: 					make([]service.Service, 0),
+		TimeStarted: 				0,
+		TimeFinishes: 				0,
+		Running: 					false,
 	}
 }
 // TYPE Scoreboard
 // DEAL WITH AGGREGATING SERVICES, AND RUNNING AND AGGREGATING SCORE CHECKS
 type Scoreboard struct {
 	Services  			[]service.Service
-	signaller 			chan state
-	ScoringTerminated 	bool
+	stopSignaller 	chan bool
+	TimeStarted 		int64 		// UNIX TIMESTAMP
+	TimeFinishes 		int64		// UNIX TIMESTAMP
+	Running				bool		// HAS SCORING STARTED
 }
 
-// START THE SCORING ROUTINE
-func (sb *Scoreboard) StartScoring(scoringInterval time.Duration) {
+func (sb* Scoreboard) ClearScores() {
+	// SET UP A CLIENT
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://ccdc-scoreserver-database:27017/"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
+	if err != nil {
+		log.Fatalf("Error occurred while connecting: %s", err)
+	}
+	defer client.Disconnect(ctx)
 
-	var curState state
+	db := client.Database(database.Database)
+	serviceChecks := db.Collection(string(database.ServiceScoreCheck))
+	scoreboardChecks := db.Collection(string(database.ScoreboardCheck))
+
+	if err = serviceChecks.Drop(ctx); err != nil {
+		log.Error("Failed to drop service score checks collection")
+	}
+	if err = scoreboardChecks.Drop(ctx); err != nil {
+		log.Error("Failed to drop scoreboard checks collection!")
+	}
+}
+// START THE SCORING ROUTINE
+// SCORING INTERVAL IS IN SECONDS
+// SCORING DURATION IS hourDuration + minuteDuration
+func (sb *Scoreboard) StartScoring(scoringInterval time.Duration, hourDuration time.Duration, minuteDuration time.Duration) error {
+
+	if sb.Running {
+		return errors.New("cannot start the scoreboard when it is already running")
+	}
 	seconds := scoringInterval * time.Second
 	log.Debugf("Scoring started on %s interval", seconds)
+
 	// CREATE A TICKER
 	ticker := time.NewTicker(seconds)
-	sb.ScoringTerminated = false
+
+	curTime := time.Now()
+	finishTime := curTime.Add(hourDuration * time.Hour).Add(minuteDuration * time.Minute)
+
+	sb.TimeStarted = curTime.Unix()
+	sb.TimeFinishes = finishTime.Unix()
+	sb.Running = true
+
 	go func() {
 
 		// INFINITE LOOP
@@ -49,65 +87,55 @@ func (sb *Scoreboard) StartScoring(scoringInterval time.Duration) {
 			select {
 
 			// IF WE HAVE A SIGNAL
-			case newState := <-sb.signaller:
-				switch newState {
-
-				case pause:
-					// IF WE GET A PAUSE COMMAND, KILL THE TICKER AND KEEP RUNNING THE LOOP
-					log.Debug("Scoring Paused!")
-					curState = newState
-					ticker.Stop()
-
-				case resume:
-
-					// RESUME ONLY IF THE STATE IS PAUSE
-					if curState == pause {
-						log.Debug("Scoring resumed!")
-						ticker = time.NewTicker(scoringInterval * time.Second)
-						curState = resume
-					} else if curState == resume || curState == start {
-						// DO NOTHING
-						continue
-					}
-				case terminate:
-
-					// KILL THE SCORING AND RETURN
-					log.Debug("Terminating Scoring")
-					ticker.Stop()
-					return
-				}
+			case <-sb.stopSignaller:
+				ticker.Stop()
+				sb.Running = false
+				return
 
 			// IF WE HAVE A TICK
 			case <-ticker.C:
+
+				// CHECK IF IT'S TIME TO STOP
+				if time.Now().Unix() > sb.TimeFinishes {
+					ticker.Stop()
+					sb.Running = false
+					return
+				}
 				// GO RUN THE SCORE CHECK
 				go sb.runScoreCheck()
-
-			// IF WE HAVE NEITHER
-			default:
-				continue
 			}
-
 		}
+	}()
+
+	return nil
+
+}
+
+func (sb *Scoreboard) RestartScoring(scoringInterval time.Duration, hourDuration time.Duration, minuteDuration time.Duration) {
+
+	// SEND THE RESTART SIGNALLER
+	go func(){
+
+		// IF RUNNING, SIGNAL TO THE ROUTINE WE'RE RESTARTING
+		if sb.Running {
+			sb.stopSignaller <- true
+		}
+
+		// CLEAR SCORES & START SCORING
+		sb.ClearScores()
+		sb.StartScoring(scoringInterval, hourDuration, minuteDuration)
 	}()
 
 }
 
-// PAUSE SCORING
-func (sb *Scoreboard) PauseScoring() {
+func (sb *Scoreboard) StopScoring() error {
 
-	sb.signaller <- pause
-}
-
-// RESUME SCORING
-func (sb *Scoreboard) ResumeScoring() {
-
-	sb.signaller <- resume
-}
-
-// STOP SCORING
-func (sb *Scoreboard) TerminateScoring() {
-
-	sb.signaller <- terminate
-	sb.ScoringTerminated = true
-
+	if sb.Running {
+		go func() {
+			sb.stopSignaller <- true
+		}()
+		return nil
+	} else {
+		return errors.New("cannot stop the scoreboard - it is not running")
+	}
 }

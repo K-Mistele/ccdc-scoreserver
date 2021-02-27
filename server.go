@@ -10,6 +10,8 @@ import (
 	"html/template"
 	"io"
 	"os"
+	"strconv"
+	"time"
 
 	"net/http"
 )
@@ -52,7 +54,7 @@ func main() {
 
 	// SET UP TEMPLATING STUFF
 	t := &Template{
-		templates: template.Must(template.ParseGlob("templates/views/*.html")),
+		templates: template.Must(template.ParseGlob("templates/*.html")),
 	}
 
 	var sb = scoreboard.NewScoreboard()
@@ -89,51 +91,72 @@ func main() {
 	e := echo.New()
 	e.Renderer = t
 
-	// DEFINE A ROUTE
-	e.GET("/", func(c echo.Context) error {
+	// DEFINE THE SCOREBOARD
+	e.GET("/", func (c echo.Context) error {
 
-		return c.String(http.StatusOK, "Welcome to Kyle's CCDC Score Server")
+		data := struct {
+			Scoreboard	scoreboard.Scoreboard
+		}{
+			Scoreboard: sb,
+		}
+
+		return c.Render(http.StatusOK, "index.html", data)
 	})
 
-	// TODO: THESE SHOULD REALLY BE POST, BUT FOR TESTING THEY'RE GET
-	e.GET("/scoring/start", func(c echo.Context) error {
-		if !sb.ScoringTerminated {
-			sb.StartScoring(5)
+	e.GET("/scoring/start", func (c echo.Context) error {
+
+		var intervalInt, hoursInt, minutesInt int
+		var err error
+
+		interval, hours, minutes := c.QueryParam("interval"), c.QueryParam("hours"), c.QueryParam("minutes")
+		if intervalInt, err = strconv.Atoi(interval); err != nil {
+			intervalInt	 = 60
+		}
+		if hoursInt, err = strconv.Atoi(hours); err != nil {
+			return c.String(http.StatusBadRequest, "You must specify a number of hours to run for!")
+		}
+		if minutesInt, err = strconv.Atoi(minutes); err != nil {
+			minutesInt = 0
+		}
+
+
+
+		if !sb.Running {
+			sb.StartScoring(time.Duration(intervalInt), time.Duration(hoursInt), time.Duration(minutesInt))
 			return c.String(http.StatusOK, "Scoring started!")
 		} else {
-			return c.String(http.StatusForbidden, "Scoring has already been terminated")
+			return c.String(http.StatusForbidden, "Scoring has already been started!")
+		}
+	})
+
+	e.GET("/scoring/restart", func (c echo.Context) error {
+		var intervalInt, hoursInt, minutesInt int
+		var err error
+
+		interval, hours, minutes := c.QueryParam("interval"), c.QueryParam("hours"), c.QueryParam("minutes")
+		if intervalInt, err = strconv.Atoi(interval); err != nil {
+			intervalInt	 = 60
+		}
+		if hoursInt, err = strconv.Atoi(hours); err != nil {
+			return c.String(http.StatusBadRequest, "You must specify a number of hours to run for!")
+		}
+		if minutesInt, err = strconv.Atoi(minutes); err != nil {
+			minutesInt = 0
 		}
 
-	})
-	e.GET("/scoring/pause", func(c echo.Context) error {
-		if !sb.ScoringTerminated {
-			log.Debug("Pausing scoring")
-			sb.PauseScoring()
-			return c.String(http.StatusOK, "Scoring paused!")
-		} else {
-			return c.String(http.StatusForbidden, "Scoring has already been terminated")
-		}
-	})
-	e.GET("/scoring/resume", func (c echo.Context) error {
-		if !sb.ScoringTerminated {
-			log.Debug("Resuming scoring")
-			sb.ResumeScoring()
-			return c.String(http.StatusOK, "Scoring resumed!")
-		} else {
-			return c.String(http.StatusForbidden, "Scoring has already been terminated")
-		}
 
+		sb.RestartScoring(time.Duration(intervalInt), time.Duration(hoursInt), time.Duration(minutesInt))
+		return c.String(http.StatusOK, "Scoring restarted!")
 	})
-	e.GET("/scoring/terminate", func (c echo.Context) error {
-		if !sb.ScoringTerminated {
-			log.Debug("Terminating scoring")
-			sb.TerminateScoring()
-			return c.String(http.StatusOK, "Scoring terminated")
-		} else {
-			return c.String(http.StatusForbidden, "Scoring has already been terminated")
-		}
 
+	e.GET("/scoring/stop", func (c echo.Context) error {
+		if err := sb.StopScoring(); err != nil {
+			return c.String(http.StatusForbidden, "Unable to stop the scoreboard - it is not running!")
+		} else {
+			return c.String(http.StatusOK, "Scoring stopped!")
+		}
 	})
+
 	e.GET("/test-mongo", func (c echo.Context) error {
 		databases := database.ListDatabases()
 		return c.String(http.StatusOK, fmt.Sprintf("%v", databases))

@@ -11,7 +11,6 @@ require (
 	github.com/kward/go-vnc v0.0.0-20171220234551-a2352a89d118
 	github.com/labstack/echo/v4 v4.2.0
 	github.com/mattn/go-colorable v0.1.8 // indirect
-	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	go.mongodb.org/mongo-driver v1.4.6
 	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83 // indirect
