@@ -3,6 +3,7 @@ package scoreboard
 import (
 	"context"
 	"github.com/k-mistele/ccdc-scoreserver/lib/database"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
@@ -59,4 +60,40 @@ func storeServiceScoreChecks(sscs *[]ServiceScoreCheck) {
 
 }
 
+// GET A LIST OF ServiceScoreCheck, IN THIS CASE ALL OF THEM
+func GetServiceScoreChecks() (*[]ServiceScoreCheck, error ){
+
+	var results []ServiceScoreCheck
+
+	// SET UP DATABASE CONNECTION
+	client, ctx, err := database.GetClient()
+	if err != nil {
+		results = make([]ServiceScoreCheck, 0)
+		return &results, err
+	}
+	defer client.Disconnect(*ctx)
+
+	// GET THE COLLECTION
+	collection := client.Database(database.Database).Collection(string(database.ServiceScoreCheck))
+
+	// CREATE OPTIONS
+	opts := options.Find()
+
+	// RUN THE FIND QUERY
+	cursor, err := collection.Find(context.TODO(), bson.M{}, opts)
+	if err != nil {
+		results = make([]ServiceScoreCheck, 0)
+		return &results, err
+	}
+
+	// DESERIALIZE THEM
+	err = cursor.All(context.TODO(), &results)
+	if err != nil {
+		results = make([]ServiceScoreCheck, 0)
+		return &results, err
+	}
+
+	return &results, nil
+
+}
 

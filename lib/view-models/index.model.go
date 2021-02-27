@@ -2,9 +2,11 @@ package view_models
 
 import (
 	"github.com/k-mistele/ccdc-scoreserver/lib/scoreboard"
-	"github.com/labstack/gommon/log"
+	"github.com/op/go-logging"
 	"time"
 )
+
+var log = logging.MustGetLogger("main")
 
 type Overview struct {
 	TimeStartedAt 				string
@@ -32,6 +34,7 @@ func NewIndexModel(sb *scoreboard.Scoreboard) (IndexModel, error) {
 	var indexModel IndexModel
 	var pieChart PieChart
 	var overview Overview
+	var serviceScoreChecks *[]scoreboard.ServiceScoreCheck
 
 	////////////////////////////////////////////////////////
 	// BUILD THE OVERVIEW - BARS AT THE TOP
@@ -86,10 +89,24 @@ func NewIndexModel(sb *scoreboard.Scoreboard) (IndexModel, error) {
 	////////////////////////////////////////////////////////
 	// BUILD THE PIECHART
 	///////////////////////////////////////////////////////
+	totalUpServices, totalDownServices := 0, 0
+	serviceScoreChecks, err = scoreboard.GetServiceScoreChecks()
+	if err != nil {
+		log.Criticalf("Failed to get service score checks: %s", err)
+	}
 
+	for _, scoreCheck := range *serviceScoreChecks {
+		log.Debug(scoreCheck)
+		if scoreCheck.IsUp {
+			totalUpServices += 1
+		} else {
+			totalDownServices += 1
+		}
+	}
 
 	pieChart = PieChart{
-
+		TotalDownServices: totalDownServices,
+		TotalUpServices: totalUpServices,
 	}
 
 	////////////////////////////////////////////////////////

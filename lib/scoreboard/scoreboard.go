@@ -179,6 +179,7 @@ func (sb *Scoreboard) runScoreCheck() {
 			IsUp: isUp,
 			ServiceName: serviceName,
 		}
+		log.Debugf("Adding service Score check %s: %v", serviceName, serviceScoreChecks[i])
 		i++
 	}
 
