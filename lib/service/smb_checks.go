@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/hirochachacha/go-smb2"
 	"net"
+	"time"
 )
 
 // TYPE ServiceCheck
@@ -17,7 +18,7 @@ func SMBListSharesCheck(s *Service) (bool, error) {
 
 	// BUILD A TCP CONNECTION
 	address := fmt.Sprintf("%s:%d", s.Host, s.Port)
-	conn, err := net.Dial("tcp", address)
+	conn, err := net.DialTimeout("tcp", address, time.Duration(5) * time.Second)
 	if err != nil {
 		s.CheckFailedWithError(err)
 		return false, err

@@ -30,7 +30,7 @@ func POP3BasicAuthCheck(s *Service) (bool, error) {
 
 	// BUILD A TCP CONNECTION TO THE IMAP SERVER
 	address = fmt.Sprintf("%s:%d", s.Host, s.Port)
-	conn, err = net.Dial("tcp", address)
+	conn, err = net.DialTimeout("tcp", address, time.Duration(5) * time.Second)
 	if err != nil {
 		s.CheckFailedWithError(err)
 		return false, err

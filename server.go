@@ -163,6 +163,6 @@ func main() {
 	})
 
 	e.Static("/assets", "assets")
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger.Fatal(e.Start(":80"))
 
 }

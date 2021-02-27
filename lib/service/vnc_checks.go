@@ -6,6 +6,7 @@ import (
 	vnc "github.com/kward/go-vnc"
 	"github.com/kward/go-vnc/rfbflags"
 	"net"
+	"time"
 )
 
 // TYPE ServiceCheck
@@ -19,7 +20,7 @@ func VNCConnectCheck(s *Service) (bool, error) {
 	address = fmt.Sprintf("%s:%d", s.Host, s.Port)
 
 	// BUILD A TCP CONNECTION
-	conn, err = net.Dial("tcp", address)
+	conn, err = net.DialTimeout("tcp", address, time.Duration(5) * time.Second)
 	if err != nil {
 		s.CheckFailedWithError(err)
 		return false, nil
