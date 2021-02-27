@@ -99,13 +99,49 @@ func main() {
 		// GET SERVER TIME
 		tz, _ := time.LoadLocation("America/Chicago")
 
+		// GET MOST RECENT SCOREBOARD CHECK
+		sbc, err := scoreboard.GetLatestScoreBoardCheck()
+		if err != nil {
+			sbc = scoreboard.ScoreboardCheck{}
+		}
+		numberUpServices, numberDownServices := 0, 0
+		for key, _ := range sbc.Scores {
+			if sbc.Scores[key] == true {
+				numberUpServices += 1
+			} else {
+				numberDownServices += 1
+			}
+		}
+		log.Debugf("%d:%d", numberUpServices, numberDownServices)
+
+		// GET TIME STARTED AT
+		var timeStarted, timeFinished string
+		if !sb.Running {
+			timeStarted = "00:00"
+			timeFinished = "00:00"
+		} else {
+			timeStarted = time.Unix(sb.TimeStarted, 0).In(tz).Format("15:04")
+			timeFinished = time.Unix(sb.TimeFinishes, 0).In(tz).Format("15:04")
+		}
+
+		// COUNT UP SERVICES AND DOWN SERVICES
+
 		data := struct {
 			TimeStartedAt 				string
 			TimeFinishesAt				string
+			ScoreboardCheck 			scoreboard.ScoreboardCheck
+			NumberUpServices 			int
+			NumberDownServices			int
+			NumberTotalServices			int
 		}{
-			TimeStartedAt: 				time.Unix(sb.TimeStarted, 0).In(tz).Format("15:04"),
-			TimeFinishesAt: 			time.Unix(sb.TimeFinishes, 0).In(tz).Format("15:04"),
+			TimeStartedAt: 				timeStarted,
+			TimeFinishesAt: 			timeFinished,
+			ScoreboardCheck:  			sbc,
+			NumberUpServices:  			numberUpServices,
+			NumberDownServices:  		numberDownServices,
+			NumberTotalServices:  		len(sb.Services),
 		}
+		log.Debug(data)
 
 		return c.Render(http.StatusOK, "index.html", data)
 	})
@@ -169,7 +205,14 @@ func main() {
 		return c.String(http.StatusOK, fmt.Sprintf("%v", databases))
 	})
 
+	e.GET("/test-collections", func (c echo.Context) error {
+		scoreboard.GetAllServiceChecks()
+		scoreboard.GetAllScoreboardChecks()
+
+		return c.String(http.StatusOK, "check logs")
+	})
+
 	e.Static("/assets", "assets")
-	e.Logger.Fatal(e.Start(":80"))
+	e.Logger.Fatal(e.Start(":8080"))
 
 }
