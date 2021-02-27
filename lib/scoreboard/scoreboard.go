@@ -67,12 +67,12 @@ func (sb *Scoreboard) StartScoring(scoringInterval time.Duration, hourDuration t
 		return errors.New("cannot start the scoreboard when it is already running")
 	}
 	seconds := scoringInterval * time.Second
-	log.Debugf("Scoring started on %s interval", seconds)
+	log.Infof("Scoring started on %s interval", seconds)
 
 	// CREATE A TICKER
 	ticker := time.NewTicker(seconds)
 
-	curTime := time.Now()
+	curTime := time.Now().UTC()
 	finishTime := curTime.Add(hourDuration * time.Hour).Add(minuteDuration * time.Minute)
 
 	sb.TimeStarted = curTime.Unix()
@@ -99,6 +99,7 @@ func (sb *Scoreboard) StartScoring(scoringInterval time.Duration, hourDuration t
 				if time.Now().Unix() > sb.TimeFinishes {
 					ticker.Stop()
 					sb.Running = false
+					log.Info("It's time to stop scoring! Stopping Scoring.")
 					return
 				}
 				// GO RUN THE SCORE CHECK
@@ -114,6 +115,7 @@ func (sb *Scoreboard) StartScoring(scoringInterval time.Duration, hourDuration t
 func (sb *Scoreboard) RestartScoring(scoringInterval time.Duration, hourDuration time.Duration, minuteDuration time.Duration) {
 
 	// SEND THE RESTART SIGNALLER
+	log.Info("Clearing database and restarting scoring")
 	go func(){
 
 		// IF RUNNING, SIGNAL TO THE ROUTINE WE'RE RESTARTING
@@ -130,6 +132,7 @@ func (sb *Scoreboard) RestartScoring(scoringInterval time.Duration, hourDuration
 
 func (sb *Scoreboard) StopScoring() error {
 
+	log.Debug("Stopping Scoring")
 	if sb.Running {
 		go func() {
 			sb.stopSignaller <- true
