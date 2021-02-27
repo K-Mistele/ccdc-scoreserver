@@ -3,6 +3,7 @@ package scoreboard
 import (
 	"context"
 	"github.com/k-mistele/ccdc-scoreserver/lib/database"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
@@ -88,5 +89,36 @@ func storeServiceScoreChecks(sscs *[]ServiceScoreCheck) {
 	}
 
 	log.Debug("Stored serviceChecks")
+
+}
+
+func GetLatestScoreboardCheck() (ScoreboardCheck, error) {
+
+	// SET UP DATABASE CONNECTION
+	client, ctx, err := database.GetClient()
+	if err != nil {
+		log.Criticalf("Failed to get database connection: %s", err)
+		return ScoreboardCheck{}, err
+	}
+	defer client.Disconnect(*ctx)
+
+	// GET THE COLLECTION
+	collection := client.Database(database.Database).Collection(string(database.ScoreboardCheck))
+
+	// CREATE OPTIONS
+	var result = ScoreboardCheck{}
+	opts := options.FindOne().SetSort(bson.M{"time": 1})
+
+	// RUN THE QUERY AND DECODE IT
+	err = collection.FindOne(context.TODO(), bson.M{}, opts).Decode(&result)
+	if err != nil {
+		log.Criticalf("Failed to return a scoreboard check: %s", err)
+		return ScoreboardCheck{}, err
+	}
+
+	// LOG AND RETURN IT
+	log.Infof("Got latest scoreboard check: %v", result)
+	return result, nil
+
 
 }
