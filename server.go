@@ -100,10 +100,12 @@ func main() {
 		tz, _ := time.LoadLocation("America/Chicago")
 
 		// GET MOST RECENT SCOREBOARD CHECK
-		sbc, err := scoreboard.GetLatestScoreBoardCheck()
+		sbc, err := scoreboard.GetLatestScoreboardCheck()
 		if err != nil {
 			sbc = scoreboard.ScoreboardCheck{}
 		}
+
+		// COUNT UP SERVICES AND DOWN SERVICES
 		numberUpServices, numberDownServices := 0, 0
 		for key, _ := range sbc.Scores {
 			if sbc.Scores[key] == true {
@@ -112,6 +114,12 @@ func main() {
 				numberDownServices += 1
 			}
 		}
+		upProgressBarWidth, downProgressBarWidth := 0, 0
+		if len(sb.Services) != 0 {
+			upProgressBarWidth = int((float32(numberUpServices) / float32(len(sb.Services))) * 100)
+			downProgressBarWidth = int((float32(numberDownServices) / float32(len(sb.Services))) * 100)
+		}
+
 		log.Debugf("%d:%d", numberUpServices, numberDownServices)
 
 		// GET TIME STARTED AT
@@ -124,22 +132,44 @@ func main() {
 			timeFinished = time.Unix(sb.TimeFinishes, 0).In(tz).Format("15:04")
 		}
 
-		// COUNT UP SERVICES AND DOWN SERVICES
 
+
+		// DEFINITION OF DATA
 		data := struct {
-			TimeStartedAt 				string
-			TimeFinishesAt				string
+			Overview					struct {
+				TimeStartedAt 				string
+				TimeFinishesAt				string
+				NumberUpServices 			int
+				NumberDownServices 			int
+				NumberTotalServices 		int
+				UpProgressBarWidth			int
+				DownProgressBarWidth		int
+			}
+
 			ScoreboardCheck 			scoreboard.ScoreboardCheck
-			NumberUpServices 			int
-			NumberDownServices			int
-			NumberTotalServices			int
+
 		}{
-			TimeStartedAt: 				timeStarted,
-			TimeFinishesAt: 			timeFinished,
+			// INSTANTIATION OF DATA
+			Overview: struct {
+				TimeStartedAt 				string
+				TimeFinishesAt				string
+				NumberUpServices 			int
+				NumberDownServices 			int
+				NumberTotalServices			int
+				UpProgressBarWidth			int
+				DownProgressBarWidth		int
+			}{
+				TimeStartedAt: 				timeStarted,
+				TimeFinishesAt: 			timeFinished,
+				NumberUpServices:  			numberUpServices,
+				NumberDownServices:  		numberDownServices,
+				NumberTotalServices:  		len(sb.Services),
+				UpProgressBarWidth:   		upProgressBarWidth,
+				DownProgressBarWidth:       downProgressBarWidth,
+			},
+
 			ScoreboardCheck:  			sbc,
-			NumberUpServices:  			numberUpServices,
-			NumberDownServices:  		numberDownServices,
-			NumberTotalServices:  		len(sb.Services),
+
 		}
 		log.Debug(data)
 
