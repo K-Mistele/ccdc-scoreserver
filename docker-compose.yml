@@ -1,19 +1,22 @@
 version: "3.3"
 services:
-  scoreserver:
-    build: ./
-    container_name: ccdc-scoreserver
-    restart: always
-    ports:
-      - 80:80
-    networks:
-      - server
+#  scoreserver:
+#    build: ./
+#    container_name: ccdc-scoreserver
+#    restart: always
+#    ports:
+#      - 8080:8080
+#    networks:
+#      - server
   database:
     image: mongo:latest
     container_name: ccdc-scoreserver-database
     restart: always
     networks:
       - server
+    ports:
+      # TODO CHANGE THIS, IT DOESN'T NEED TO BE EXPOSED
+      - 27017-27019:27017-27019
 
 networks:
   server:

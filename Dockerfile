@@ -1,6 +1,6 @@
 FROM golang:1.15.8
 WORKDIR /app
 COPY . .
-EXPOSE 80
+EXPOSE 8080
 CMD ["go", "get"]
 ENTRYPOINT ["go", "run", "server.go"]
