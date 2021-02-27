@@ -14,7 +14,8 @@ var log = logging.MustGetLogger("main")
 func ListDatabases() []string {
 
 	// SET UP A CLIENT
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://ccdc-scoreserver-database:27017/"))
+	// TODO: CHANGE THIS FOR DEVELOPMENT
+	client, err := mongo.NewClient(options.Client().ApplyURI(URI))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -37,4 +38,24 @@ func ListDatabases() []string {
 		log.Fatal("Error occurred while listing databases: %s", err)
 	}
 	return databases
+}
+
+func GetClient() (*mongo.Client, *context.Context, error) {
+
+	// GET A CLIENT
+	ctx, cancel := context.WithTimeout(context.Background(), 10 * time.Second)
+	defer cancel()
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(URI))
+	if err != nil {
+		log.Criticalf("%s", err)
+		return nil, nil, err
+	}
+
+	// PING TO MAKE SURE IT'S LIVE
+	if err := client.Ping(ctx, readpref.Primary()); err != nil {
+		log.Critical(err)
+		return nil, nil, err
+	}
+
+	return client, &ctx, err
 }
