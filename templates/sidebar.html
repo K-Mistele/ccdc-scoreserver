@@ -1,0 +1,105 @@
+{{ define "sidebar.html" }}
+<!-- Sidebar -->
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+    <!-- Sidebar - Brand -->
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/">
+        <div class="sidebar-brand-icon rotate-n-15">
+            <i class="fas fa-bolt"></i>
+        </div>
+        <div class="sidebar-brand-text mx-3">Blacklight's Scoreserver</div>
+    </a>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider my-0">
+
+    <!-- Nav Item - Dashboard -->
+    <li class="nav-item active">
+        <a class="nav-link" href="/">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Scoreboard</span></a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+    <!-- Heading -->
+    <div class="sidebar-heading">
+        Scoring
+    </div>
+
+    <!-- SERVICES -->
+    <li class="nav-item">
+        <a class="nav-link" href="/services.html">
+            <i class="fas fa-fw fa-server"></i>
+            <span>Services</span>
+        </a>
+
+    </li>
+
+    <!-- INJECTS -->
+    <li class="nav-item">
+        <a class="nav-link" href="#">
+            <i class="fas fa-fw fa-file-contract"></i>
+            <span>Injects</span>
+        </a>
+    </li>
+
+    <!-- BREACH REPORTS -->
+    <li class="nav-item">
+        <a class="nav-link" href="#">
+            <i class="fas fa-fw fa-file-csv"></i>
+            <span>Breach reports</span>
+        </a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+    <!-- Heading -->
+    <div class="sidebar-heading">
+        Admin
+    </div>
+
+    <!-- Nav Item - Pages Collapse Menu -->
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
+           aria-expanded="true" aria-controls="collapsePages">
+            <i class="fas fa-fw fa-cog"></i>
+            <span>Services</span>
+        </a>
+        <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="login.html">Add</a>
+                <a class="collapse-item" href="register.html">Configure</a>
+                <a class="collapse-item" href="forgot-password.html">Remove</a>
+            </div>
+        </div>
+    </li>
+
+    <!-- SCORING -->
+    <li class="nav-item">
+        <a class="nav-link" href="charts.html">
+            <i class="fas fa-fw fa-cog"></i>
+            <span>Scoring</span></a>
+    </li>
+
+    <!-- SYSTEM LOGS -->
+    <li class="nav-item">
+        <a class="nav-link" href="tables.html">
+            <i class="fas fa-fw fa-list"></i>
+            <span>System Logs</span></a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider d-none d-md-block">
+
+    <!-- Sidebar Toggler (Sidebar) -->
+    <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div>
+
+
+</ul>
+<!-- End of Sidebar -->
+{{ end }}
