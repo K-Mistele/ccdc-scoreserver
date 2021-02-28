@@ -179,12 +179,12 @@ func (sb *Scoreboard) runScoreCheck() {
 			IsUp: isUp,
 			ServiceName: serviceName,
 		}
-		log.Debugf("Adding service Score check %s: %v", serviceName, serviceScoreChecks[i])
+		//log.Debugf("Adding service Score check %s: %v", serviceName, serviceScoreChecks[i])
 		i++
 	}
 
 	// THROW BOTH INTO MONGO
-	log.Debug("Storing information in database")
+	//log.Debug("Storing information in database")
 	go storeScoreboardCheck(&sbc)
 	go storeServiceScoreChecks(&serviceScoreChecks)
 

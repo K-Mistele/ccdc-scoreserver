@@ -47,7 +47,7 @@ func storeScoreboardCheck(sbc *ScoreboardCheck) {
 		log.Errorf("Failed to insert score checks: %s", err)
 	}
 
-	log.Debug("Stored scoreboardChecks")
+	//log.Debug("Stored scoreboardChecks")
 
 }
 
@@ -67,7 +67,7 @@ func GetLatestScoreboardCheck() (ScoreboardCheck, error) {
 
 	// CREATE OPTIONS
 	var result = ScoreboardCheck{}
-	opts := options.FindOne().SetSort(bson.M{"time": 1})
+	opts := options.FindOne().SetSort(bson.M{"time": -1})
 
 	// RUN THE QUERY AND DECODE IT
 	err = collection.FindOne(context.TODO(), bson.M{}, opts).Decode(&result)

@@ -57,7 +57,7 @@ func storeServiceScoreChecks(sscs *[]ServiceScoreCheck) {
 		log.Errorf("Failed to insert score checks: %s", err)
 	}
 
-	log.Debug("Stored serviceChecks")
+	//log.Debug("Stored serviceChecks")
 
 }
 
@@ -114,7 +114,7 @@ func GetRecentScoreCheckTimes(numScoreChecks int, serviceName string) ([]string,
 	// CREATE OPTIONS
 	var scoreChecks []ServiceScoreCheck
 	opts := options.Find()
-	opts.SetSort(bson.M{"time": 1})
+	opts.SetSort(bson.M{"time": -1})
 	opts.SetLimit(int64(numScoreChecks))
 
 	// RUN THE QUERY AND DECODE IT
@@ -156,7 +156,7 @@ func GetRecentScoreChecks(numScoreChecks int, serviceName string) (*[]ServiceSco
 	// CREATE OPTIONS
 	var scoreChecks []ServiceScoreCheck
 	opts := options.Find()
-	opts.SetSort(bson.M{"time": 1})
+	opts.SetSort(bson.M{"time": -1})
 	opts.SetLimit(int64(numScoreChecks))
 
 	// RUN THE QUERY
