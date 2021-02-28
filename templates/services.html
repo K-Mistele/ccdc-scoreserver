@@ -20,6 +20,9 @@
     <!-- Custom styles for this template-->
     <link href="/assets/css/sb-admin-2.min.css" rel="stylesheet">
 
+    <!-- CUSTOM STYLESHEET -->
+    <link rel="stylesheet" href="/assets/css/custom.css">
+
 </head>
 
 <body id="page-top">
@@ -65,24 +68,24 @@
                                         <table class="table">
                                             <tbody>
                                             <tr>
-                                                <th scope="row">Host</th>
+                                                <th class="fixed-width" scope="row">Host</th>
                                                 <td>{{ .Host }}</td>
                                             </tr>
                                             <tr>
-                                                <th scope="row">Port</th>
+                                                <th class="fixed-width" scope="row">Port</th>
                                                 <td>{{ .Port }} ({{ .TransportProtocol }})</td>
                                             </tr>
                                             <tr>
-                                                <th scope="row">Username</th>
+                                                <th class="fixed-width" scope="row">Username</th>
                                                 <td>{{ .Username }}</td>
                                             </tr>
                                             <tr>
-                                                <th scope="row">Status</th>
+                                                <th class="fixed-width" scope="row">Status</th>
                                                 <td>
                                                     {{ if .Status }}
-                                                        <span class="text-success">Up</span>
+                                                    <span class="text-success">Up</span>
                                                     {{ else }}
-                                                        <span class="text-danger">Down</span>
+                                                    <span class="text-danger">Down</span>
                                                     {{ end }}
                                                 </td>
                                             </tr>
