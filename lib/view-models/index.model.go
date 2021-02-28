@@ -90,7 +90,7 @@ func NewIndexModel(sb *scoreboard.Scoreboard) (IndexModel, error) {
 	// COUNT UP SERVICES AND DOWN SERVICES
 	numberUpServices, numberDownServices := 0, 0
 	for _, isUp := range sbc.Scores {
-		log.Debug(sbc.Scores)
+		//log.Debug(sbc.Scores)
 		if isUp {
 			numberUpServices += 1
 		} else {
@@ -100,12 +100,12 @@ func NewIndexModel(sb *scoreboard.Scoreboard) (IndexModel, error) {
 
 	upProgressBarWidth, downProgressBarWidth := 0, 0
 	if len(sb.Services) != 0 {
-		log.Debugf("up: %d, down: %d, total: %d", numberUpServices, numberDownServices, len(sb.Services))
+		//log.Debugf("up: %d, down: %d, total: %d", numberUpServices, numberDownServices, len(sb.Services))
 		upProgressBarWidth = int((float32(numberUpServices) / float32(len(sb.Services))) * 100)
 		downProgressBarWidth = int((float32(numberDownServices) / float32(len(sb.Services))) * 100)
 	}
 
-	log.Debugf("%d:%d", numberUpServices, numberDownServices)
+	//log.Debugf("%d:%d", numberUpServices, numberDownServices)
 
 	// GET TIME STARTED AT
 	var timeStarted, timeFinished string
@@ -179,7 +179,7 @@ func NewIndexModel(sb *scoreboard.Scoreboard) (IndexModel, error) {
 		Services:	services,
 	}
 
-	log.Debug(scoreboardChart)
+	//log.Debug(scoreboardChart)
 
 	////////////////////////////////////////////////////////
 	// BUILD THE IndexModel MODEL - BARS AT THE TOP
