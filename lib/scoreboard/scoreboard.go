@@ -159,7 +159,7 @@ func (sb *Scoreboard) runScoreCheck() {
 	var curTime int64
 	curTime = time.Now().UTC().Unix()
 	var serviceScoreChecks []ServiceScoreCheck
-	
+
 	log.Infof("Running score check")
 
 	// CREATE A ScoreboardCheck
