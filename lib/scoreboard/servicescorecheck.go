@@ -2,6 +2,7 @@ package scoreboard
 
 import (
 	"context"
+	"github.com/k-mistele/ccdc-scoreserver/lib/constants"
 	"github.com/k-mistele/ccdc-scoreserver/lib/database"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -61,7 +62,7 @@ func storeServiceScoreChecks(sscs *[]ServiceScoreCheck) {
 }
 
 // GET A LIST OF ServiceScoreCheck, IN THIS CASE ALL OF THEM
-func GetServiceScoreChecks() (*[]ServiceScoreCheck, error ){
+func GetAllServiceScoreChecks() (*[]ServiceScoreCheck, error ){
 
 	var results []ServiceScoreCheck
 
@@ -97,3 +98,79 @@ func GetServiceScoreChecks() (*[]ServiceScoreCheck, error ){
 
 }
 
+// GET A LIST OF THE MOST RECENT TIMES
+func GetRecentScoreCheckTimes(numScoreChecks int, serviceName string) ([]string, error) {
+
+	// SET UP A DATABASE CONNECTION
+	client, ctx, err := database.GetClient()
+	if err != nil {
+		return []string{}, nil
+	}
+	defer client.Disconnect(*ctx)
+
+	// GET THE COLLECTION
+	collection := client.Database(database.Database).Collection(string(database.ServiceScoreCheck))
+
+	// CREATE OPTIONS
+	var scoreChecks []ServiceScoreCheck
+	opts := options.Find()
+	opts.SetSort(bson.M{"time": 1})
+	opts.SetLimit(int64(numScoreChecks))
+
+	// RUN THE QUERY AND DECODE IT
+	cursor, err := collection.Find(context.TODO(), bson.M{"servicename": serviceName}, opts)
+	if err != nil {
+		return []string{}, err
+	}
+
+	// DESERIALIZE IT
+	err = cursor.All(context.TODO(), &scoreChecks)
+	if err != nil {
+		return []string{}, err
+	}
+
+	// FIND ALL THE TIMES
+	times := make([]string, 0)
+	for _, scoreCheck := range scoreChecks {
+		t := time.Unix(scoreCheck.Time, 0).In(constants.ServerTime).Format("15:04")
+		times = append(times, t)
+	}
+
+	return times, nil
+
+}
+
+// GET A LIST OF THE n MOST RECENT ServiceScoreCheck OBJECTS
+func GetRecentScoreChecks(numScoreChecks int, serviceName string) (*[]ServiceScoreCheck, error) {
+
+	// SET UP A DATABASE CONNECTION
+	client, ctx, err := database.GetClient()
+	if err != nil {
+		return &[]ServiceScoreCheck{}, err
+	}
+	defer client.Disconnect(*ctx)
+
+	// GET THE COLLECTION
+	collection := client.Database(database.Database).Collection(string(database.ServiceScoreCheck))
+
+	// CREATE OPTIONS
+	var scoreChecks []ServiceScoreCheck
+	opts := options.Find()
+	opts.SetSort(bson.M{"time": 1})
+	opts.SetLimit(int64(numScoreChecks))
+
+	// RUN THE QUERY
+	cursor, err := collection.Find(context.TODO(), bson.M{"servicename": serviceName}, opts)
+	if err != nil {
+		return &scoreChecks, err
+	}
+
+	// DESERIALIZE IT
+	err = cursor.All(context.TODO(), &scoreChecks)
+	if err != nil {
+		return &scoreChecks, err
+	}
+
+	return &scoreChecks, nil
+
+}
