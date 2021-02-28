@@ -9,7 +9,7 @@ import (
 )
 
 var log = logging.MustGetLogger("main")
-var numChecksToDisplay = 8
+var numChecksToDisplay = 10
 
 // GOROUTINE TO GET THE MOST RECENT SCORES FOR A scoreboard.ServiceScoreCheck
 // AND ADD THEM TO A MAP. SHOULD BE RUN WITH A WAITGROUP
