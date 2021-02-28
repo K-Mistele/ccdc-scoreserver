@@ -68,7 +68,7 @@ type IndexModel struct {
 	ScoreboardCheck     scoreboard.ScoreboardCheck
 }
 
-
+// BUILD AN IndexModel AND RETURN IT FOR A ROUTE
 func NewIndexModel(sb *scoreboard.Scoreboard) (IndexModel, error) {
 
 	var indexModel IndexModel

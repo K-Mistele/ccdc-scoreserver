@@ -86,24 +86,50 @@ func main() {
 		Points:				10,
 	}
 
+	var s3 = service.Service {
+		Host:				"10.0.1.52",
+		Port: 				8080,
+		Name: 				"Squirtle-Should-Fail",
+		TransportProtocol:  "tcp",
+		Username: 			"",
+		Password:			"password",
+		ServiceCheck:		service.HTTPGetStatusCodeCheck,
+		ServiceCheckData:   map[string]interface{}{},
+		Points:				10,
+	}
+	s3.ServiceCheckData["url"] = "/"
+	s3.ServiceCheckData["expectedCode"] = "200"
+
 	sb.Services = append(sb.Services, s1)
 	sb.Services = append(sb.Services, s2)
+	sb.Services = append(sb.Services, s3)
 
 
 	// INITIALIZE THE APP, SETTING UP A DEFAULT ROUTE AND STATIC DIRECTORY
 	e := echo.New()
 	e.Renderer = t
 
-	// DEFINE THE SCOREBOARD
+	// DEFINE THE SCOREBOARD ROUTE
 	e.GET("/", func (c echo.Context) error {
 
-		var data view_models.IndexModel
-		data, err := view_models.NewIndexModel(&sb)
+		var model view_models.IndexModel
+		model, err := view_models.NewIndexModel(&sb)
 		if err != nil {
 			log.Criticalf("Error building index model: %s", err)
 		}
 
-		return c.Render(http.StatusOK, "index.html", data)
+		return c.Render(http.StatusOK, "index.html", model)
+	})
+
+	// DEFINE THE SERVICES ROUTE
+	e.GET("/services", func (c echo.Context) error {
+		var model view_models.ServicesModel
+		model, err := view_models.NewServiceModel(&sb)
+		if err != nil {
+			log.Critical("Error builsing servics model: %s", err)
+		}
+
+		return c.Render(http.StatusOK, "services.html", model)
 	})
 
 	e.GET("/scoring/start", func (c echo.Context) error {
