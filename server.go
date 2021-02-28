@@ -121,7 +121,7 @@ func main() {
 		return c.Render(http.StatusOK, "index.html", model)
 	})
 
-	// DEFINE THE SERVICES ROUTE
+	// DEFINE THE SERVICES ROUTES
 	e.GET("/services", func (c echo.Context) error {
 		var model view_models.ServicesModel
 		model, err := view_models.NewServiceModel(&sb)
@@ -131,6 +131,31 @@ func main() {
 
 		return c.Render(http.StatusOK, "services.html", model)
 	})
+
+	// CHANGE THE PASSWORD FOR A SERVICE
+	e.POST("/services/:name/password", func (c echo.Context) error {
+
+		var s *service.Service
+
+		serviceName := c.Param("name")
+		s, err := sb.GetService(serviceName)
+
+		if err != nil {
+			log.Errorf("Failed to change password - service %s not found", serviceName)
+			return c.String(http.StatusNotFound, fmt.Sprint(err))
+		}
+
+		password, confirmPassword := c.FormValue("password"), c.FormValue("confirmPassword")
+		if password != confirmPassword {
+			log.Errorf("Failed to change password - passwords don't match!")
+			return c.String(http.StatusBadRequest, "Passwords do not match!")
+		}
+
+		s.ChangePassword(password)
+		log.Infof("Changed password for service %s", serviceName)
+		return c.Redirect(http.StatusFound, "/services")
+	})
+
 
 	e.GET("/scoring/start", func (c echo.Context) error {
 

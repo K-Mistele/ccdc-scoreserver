@@ -10,8 +10,8 @@ import (
 )
 
 type ScoreboardCheck struct {
-	Time 		int64					`bson:"time"`// UNIX TIME STAMP
-	Scores		map[string]bool			`bson:"scores"`// MAPS SERVICE NAME TO SCORE
+	Time   int64           `bson:"time"`   // UNIX TIME STAMP
+	Scores map[string]bool `bson:"scores"` // MAPS SERVICE NAME TO SCORE
 }
 
 // STORE ScoreboardCheck TO MONGO
@@ -75,12 +75,5 @@ func GetLatestScoreboardCheck() (ScoreboardCheck, error) {
 		log.Criticalf("Failed to return a scoreboard check: %s", err)
 		return ScoreboardCheck{}, err
 	}
-
-	// LOG AND RETURN IT
-	log.Infof("Got latest scoreboard check: %v", result)
 	return result, nil
-
-
 }
-
-

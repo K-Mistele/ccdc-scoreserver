@@ -55,3 +55,8 @@ func (s Service) CheckFailedWithReason(msg string) {
 func (s Service) CheckPassed() {
 	log.Infof("Score check succeeded for service \"%s\"", s.Name)
 }
+
+// CHANGE THE PASSWORD FOR A SERVICE
+func (s *Service) ChangePassword(password string) {
+	(*s).Password = password
+}

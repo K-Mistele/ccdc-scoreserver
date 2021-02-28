@@ -3,6 +3,7 @@ package scoreboard
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/k-mistele/ccdc-scoreserver/lib/database"
 	"github.com/k-mistele/ccdc-scoreserver/lib/service"
 	logging "github.com/op/go-logging"
@@ -31,6 +32,18 @@ type Scoreboard struct {
 	TimeStarted 		int64 		// UNIX TIMESTAMP
 	TimeFinishes 		int64		// UNIX TIMESTAMP
 	Running				bool		// HAS SCORING STARTED
+}
+func (sb *Scoreboard) GetService(serviceName string) (*service.Service, error) {
+
+	// FIND A SERVICE WITH THE MATCHING NAME AND RETURN A POINTER
+	for i, _ := range sb.Services {
+		if sb.Services[i].Name == serviceName {
+			return &(sb.Services[i]), nil
+		}
+	}
+
+	// IF NONE FOUND, RETURN AN ERROR
+	return nil, errors.New(fmt.Sprintf("unable to find a service on the scoreboard with a name of %s", serviceName))
 }
 
 func (sb* Scoreboard) ClearScores() {
@@ -146,7 +159,7 @@ func (sb *Scoreboard) runScoreCheck() {
 	var curTime int64
 	curTime = time.Now().UTC().Unix()
 	var serviceScoreChecks []ServiceScoreCheck
-
+	
 	log.Infof("Running score check")
 
 	// CREATE A ScoreboardCheck
@@ -154,14 +167,14 @@ func (sb *Scoreboard) runScoreCheck() {
 		Time:   curTime,
 		Scores: map[string]bool{},
 	}
-	log.Infof("Created Scoreboard check")
+	//log.Infof("Created Scoreboard check")
 
 	// CREATE A WAITGROUP
 	wg = sync.WaitGroup{}
 
 	// KICK OFF SERVICE CHECKS
 
-	for _, s = range sb.Services {
+	for _, s = range (*sb).Services {
 		wg.Add(1)
 		go s.DispatchServiceCheck(&(sbc.Scores), &wg)
 	}

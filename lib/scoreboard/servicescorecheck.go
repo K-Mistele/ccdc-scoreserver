@@ -199,7 +199,5 @@ func ServiceIsUp(serviceName string) (bool, error) {
 		return false, err
 	}
 
-	// LOG AND RETURN IT
-	log.Infof("Got latest scoreboard check: %v", result)
 	return result.IsUp, nil
 }
