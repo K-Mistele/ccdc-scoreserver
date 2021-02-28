@@ -423,43 +423,27 @@
                                         <thead>
                                         <tr>
                                             <th scope="col">Service</th>
-                                            <th scope="col">10:05</th>
-                                            <th scope="col">10:04</th>
-                                            <th scope="col">10:03</th>
-                                            <th scope="col">10:02</th>
-                                            <th scope="col">10:01</th>
-                                            <th scope="col">10:00</th>
+                                            {{ range .ScoreboardChart.Times }}
+                                            <th scope="col">{{ . }}</th>
+                                            {{ end }}
                                         </tr>
                                         </thead>
                                         <tbody>
+                                            {{ range $serviceName, $scores := .ScoreboardChart.Services }}
                                         <tr>
-                                            <th scope="row">Charizard-SMB</th>
-                                            <td><i class="fas fa-arrow-up fa-2x text-success"></i></td>
-                                            <td><i class="fas fa-arrow-up fa-2x text-success"></i></td>
-                                            <td><i class="fas fa-arrow-up fa-2x text-success"></i></td>
-                                            <td><i class="fas fa-arrow-down fa-2x text-danger"></i></td>
-                                            <td><i class="fas fa-arrow-down fa-2x text-danger"></i></td>
-                                            <td><i class="fas fa-arrow-down fa-2x text-danger"></i></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Pikachu-HTTP</th>
-                                            <td><i class="fas fa-arrow-up fa-2x text-success"></i></td>
-                                            <td><i class="fas fa-arrow-up fa-2x text-success"></i></td>
-                                            <td><i class="fas fa-arrow-down fa-2x text-danger"></i></td>
-                                            <td><i class="fas fa-arrow-down fa-2x text-danger"></i></td>
-                                            <td><i class="fas fa-arrow-up fa-2x text-success"></i></td>
-                                            <td><i class="fas fa-arrow-down fa-2x text-danger"></i></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Dragonite-Mail</th>
-                                            <td><i class="fas fa-arrow-up fa-2x text-success"></i></td>
-                                            <td><i class="fas fa-arrow-down fa-2x text-danger"></i></td>
-                                            <td><i class="fas fa-arrow-down fa-2x text-danger"></i></td>
-                                            <td><i class="fas fa-arrow-up fa-2x text-success"></i></td>
-                                            <td><i class="fas fa-arrow-up fa-2x text-success"></i></td>
-                                            <td><i class="fas fa-arrow-down fa-2x text-danger"></i></td>
+                                            <th scope="row">{{ $serviceName }}</th>
+
+                                            {{range $scores }}
+                                                {{if . }}
+                                                    <td><i class="fas fa-arrow-up fa-2x text-success"></i></td>
+                                                {{ else }}
+                                                    <td><i class="fa fa-arrow-down fa-2x text-danger"></i></td>
+                                                {{ end }}
+                                            {{ end }}
 
                                         </tr>
+                                            {{ end }}
+                                        
                                         </tbody>
                                     </table>
                                 </div>

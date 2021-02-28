@@ -89,8 +89,9 @@ func NewIndexModel(sb *scoreboard.Scoreboard) (IndexModel, error) {
 
 	// COUNT UP SERVICES AND DOWN SERVICES
 	numberUpServices, numberDownServices := 0, 0
-	for key, _ := range sbc.Scores {
-		if sbc.Scores[key] == true {
+	for _, isUp := range sbc.Scores {
+		log.Debug(sbc.Scores)
+		if isUp {
 			numberUpServices += 1
 		} else {
 			numberDownServices += 1
@@ -99,6 +100,7 @@ func NewIndexModel(sb *scoreboard.Scoreboard) (IndexModel, error) {
 
 	upProgressBarWidth, downProgressBarWidth := 0, 0
 	if len(sb.Services) != 0 {
+		log.Debugf("up: %d, down: %d, total: %d", numberUpServices, numberDownServices, len(sb.Services))
 		upProgressBarWidth = int((float32(numberUpServices) / float32(len(sb.Services))) * 100)
 		downProgressBarWidth = int((float32(numberDownServices) / float32(len(sb.Services))) * 100)
 	}
@@ -134,7 +136,7 @@ func NewIndexModel(sb *scoreboard.Scoreboard) (IndexModel, error) {
 	}
 
 	for _, scoreCheck := range *serviceScoreChecks {
-		log.Debug(scoreCheck)
+
 		if scoreCheck.IsUp {
 			totalUpServices += 1
 		} else {
