@@ -76,6 +76,16 @@
                                                 <th scope="row">Username</th>
                                                 <td>{{ .Username }}</td>
                                             </tr>
+                                            <tr>
+                                                <th scope="row">Status</th>
+                                                <td>
+                                                    {{ if .Status }}
+                                                        <span class="text-success">Up</span>
+                                                    {{ else }}
+                                                        <span class="text-danger">Down</span>
+                                                    {{ end }}
+                                                </td>
+                                            </tr>
                                             </tbody>
                                         </table>
                                         <button class="btn btn-primary">Change password</button>
@@ -100,7 +110,7 @@
             <footer class="sticky-footer bg-white">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; Your Website 2020</span>
+                        <span>Copyright &copy; Kyle Mistele 2021</span>
                     </div>
                 </div>
             </footer>

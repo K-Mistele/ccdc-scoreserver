@@ -174,3 +174,32 @@ func GetRecentScoreChecks(numScoreChecks int, serviceName string) (*[]ServiceSco
 	return &scoreChecks, nil
 
 }
+
+// CHECK TO SEE IF A service.Service IS STILL UP BY CHECKING ITS MOST RECENT ServiceScoreCheck
+func ServiceIsUp(serviceName string) (bool, error) {
+	// SET UP DATABASE CONNECTION
+	client, ctx, err := database.GetClient()
+	if err != nil {
+		log.Criticalf("Failed to get database connection: %s", err)
+		return false, err
+	}
+	defer client.Disconnect(*ctx)
+
+	// GET THE COLLECTION
+	collection := client.Database(database.Database).Collection(string(database.ServiceScoreCheck))
+
+	// CREATE OPTIONS
+	var result = ServiceScoreCheck{}
+	opts := options.FindOne().SetSort(bson.M{"time": -1})
+
+	// RUN THE QUERY AND DECODE IT
+	err = collection.FindOne(context.TODO(), bson.M{"servicename": serviceName}, opts).Decode(&result)
+	if err != nil {
+		log.Criticalf("Failed to return a scoreboard check: %s", err)
+		return false, err
+	}
+
+	// LOG AND RETURN IT
+	log.Infof("Got latest scoreboard check: %v", result)
+	return result.IsUp, nil
+}
