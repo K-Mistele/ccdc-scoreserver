@@ -35,7 +35,7 @@ func HTTPGetStatusCodeCheck(s *Service) (bool, error) {
 	expectedCode, _ = strconv.Atoi(expectedCodeStr)
 
 	// RUN THE GET REQUEST
-	response, err = http.Get(url)
+	response, err = http.Get(fmt.Sprintf("http://%s:%d%s", s.Host, s.Port, url))
 	if err != nil {
 		reason := fmt.Sprintf("Couldn't GET the service - %s", err)
 		s.CheckFailedWithReason(reason)
