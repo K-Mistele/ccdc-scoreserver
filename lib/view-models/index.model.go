@@ -3,6 +3,7 @@ package view_models
 import (
 	"github.com/k-mistele/ccdc-scoreserver/lib/constants"
 	"github.com/k-mistele/ccdc-scoreserver/lib/scoreboard"
+	"github.com/labstack/echo/v4"
 	"github.com/op/go-logging"
 	"sync"
 	"time"
@@ -66,10 +67,11 @@ type IndexModel struct {
 	PieChart 			PieChart
 	ScoreboardChart		ScoreboardChart
 	ScoreboardCheck     scoreboard.ScoreboardCheck
+	Messages 			MessagesModel
 }
 
 // BUILD AN IndexModel AND RETURN IT FOR A ROUTE
-func NewIndexModel(sb *scoreboard.Scoreboard) (IndexModel, error) {
+func NewIndexModel(sb *scoreboard.Scoreboard, c *echo.Context) (IndexModel, error) {
 
 	var indexModel IndexModel
 	var pieChart PieChart
@@ -190,6 +192,7 @@ func NewIndexModel(sb *scoreboard.Scoreboard) (IndexModel, error) {
 		PieChart: pieChart,
 		ScoreboardChart: scoreboardChart,
 		ScoreboardCheck: sbc,
+		Messages: NewMessagesModel(c),
 	}
 
 	return indexModel, nil

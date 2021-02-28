@@ -5,6 +5,7 @@ go 1.15
 require (
 	github.com/dutchcoders/goftp v0.0.0-20170301105846-ed59a591ce14
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b // indirect
+	github.com/gorilla/sessions v1.2.1
 	github.com/helloyi/go-sshclient v1.0.0
 	github.com/hirochachacha/go-smb2 v1.0.3
 	github.com/korylprince/go-ad-auth/v3 v3.1.1

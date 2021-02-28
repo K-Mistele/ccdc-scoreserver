@@ -113,7 +113,7 @@ func main() {
 	e.GET("/", func (c echo.Context) error {
 
 		var model view_models.IndexModel
-		model, err := view_models.NewIndexModel(&sb)
+		model, err := view_models.NewIndexModel(&sb, &c)
 		if err != nil {
 			log.Criticalf("Error building index model: %s", err)
 		}
@@ -124,7 +124,7 @@ func main() {
 	// DEFINE THE SERVICES ROUTES
 	e.GET("/services", func (c echo.Context) error {
 		var model view_models.ServicesModel
-		model, err := view_models.NewServiceModel(&sb)
+		model, err := view_models.NewServiceModel(&sb, &c)
 		if err != nil {
 			log.Critical("Error builsing servics model: %s", err)
 		}

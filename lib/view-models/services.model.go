@@ -3,6 +3,7 @@ package view_models
 import (
 	"github.com/k-mistele/ccdc-scoreserver/lib/scoreboard"
 	"github.com/k-mistele/ccdc-scoreserver/lib/service"
+	"github.com/labstack/echo/v4"
 )
 
 // THE ServiceCard STRUCT IS THE TYPE THAT'LL BE PIPELINED TO EACH CARD
@@ -23,14 +24,16 @@ type ServicesModel struct {
 	// THEORETICALLY THERE SHOULD ONLY BE 2 COLUMNS
 	Columns 			[][]ServiceCard
 	Services 			[]service.Service
+	Messages 			MessagesModel
 }
 
 // BUILD A ServicesModel AND RETURN IT FOR A ROUTE
-func NewServiceModel(sb *scoreboard.Scoreboard) (ServicesModel, error) {
+func NewServiceModel(sb *scoreboard.Scoreboard, c *echo.Context) (ServicesModel, error) {
 
 	servicesModel := ServicesModel{
 		Columns: 	[][]ServiceCard{{}, {}},
 		Services: 	[]service.Service{},
+		Messages: 	NewMessagesModel(c),
 	}
 	for i, s := range sb.Services {
 

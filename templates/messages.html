@@ -1,0 +1,37 @@
+{{ define "messages.html" }}
+
+<div id="snackbar">
+
+    <!-- MESSAGES -->
+    {{ if .Success }}
+
+        {{ range .Success }}
+            <div class="success alert alert-warning alert-dismissible" role="alert">
+                {{.}}
+            </div>
+        {{ end }}
+    {{ end }}
+    {{ if .Error }}
+    <div class="error alert alert-warning alert-dismissible" role="alert">
+        {{.}}
+    </div>
+    {{end}}
+
+    <!-- SUPPORTING SCRIPT -->
+    <script>
+        const snackbar = document.getElementById("snackbar");
+
+        console.log("showing snackbar");
+        snackbar.className = "show";
+
+        // HIDE MESSAGES AFTER ABOUT 8 SECONDS
+        setTimeout(() => {
+            console.log("hiding snackbar");
+            snackbar.innerHTML = "";
+            snackbar.className = snackbar.className.replace("show", "");
+        }, 7900);
+
+    </script>
+
+</div>
+{{ end }}
