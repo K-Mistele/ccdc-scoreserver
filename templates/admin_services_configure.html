@@ -32,6 +32,9 @@
     <!-- CUSTOM STYLESHEET -->
     <link rel="stylesheet" href="/assets/css/custom.css">
 
+    <!-- PAGE SCRIPTS -->
+    <script src="/assets/js/admin/configureServices.js"></script>
+
 </head>
 
 <body id="page-top">
@@ -79,7 +82,7 @@
                                         <div class="dropdown-header">Actions:</div>
 
                                         <!-- TODO THIS SHOULD BE A FORM OR JAVASCRIPT ONCLICK HERE -->
-                                        <a class="dropdown-item" href="#"><span class="text-danger">Delete</span></a>
+                                        <a class="dropdown-item" onclick="deleteService('{{ .Name }}')"> <span class="text-danger">Delete</span></a>
                                     </div>
                                 </div>
                             </div>
@@ -157,7 +160,7 @@
                     <span aria-hidden="true">×</span>
                 </button>
             </div>
-            <form action="/services/{{ .Name }}/password" method="POST">
+            <form action="/service/{{ .Name }}/password" method="POST">
                 <div class="modal-body">
 
                     <div class="form-group">

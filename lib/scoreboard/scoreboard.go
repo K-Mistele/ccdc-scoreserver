@@ -33,6 +33,8 @@ type Scoreboard struct {
 	TimeFinishes 		int64		// UNIX TIMESTAMP
 	Running				bool		// HAS SCORING STARTED
 }
+
+// RETURN A POINTER TO A service.Service WITH THE MATCHING NAME IN THE SCOREBOARD
 func (sb *Scoreboard) GetService(serviceName string) (*service.Service, error) {
 
 	// FIND A SERVICE WITH THE MATCHING NAME AND RETURN A POINTER
@@ -44,6 +46,22 @@ func (sb *Scoreboard) GetService(serviceName string) (*service.Service, error) {
 
 	// IF NONE FOUND, RETURN AN ERROR
 	return nil, errors.New(fmt.Sprintf("unable to find a service on the scoreboard with a name of %s", serviceName))
+}
+
+// DELETE A service.Service IN THE SCOREBOARD WITH THE MATCHING NAME, OR RETURN AN ERROR
+func (sb *Scoreboard) DeleteService(serviceName string) error {
+
+	// FIND A SERVICE WITH THE MATCHING NAME AND IF IT EXISTS DELETE IT
+	for i , _:= range sb.Services {
+		if sb.Services[i].Name == serviceName {
+
+			copy(sb.Services[i:], sb.Services[i+1:])
+			sb.Services = sb.Services[:len(sb.Services)-1]
+			return nil
+		}
+	}
+
+	return errors.New(fmt.Sprintf("unable to delete services %s from scoreboard - unable to find it", serviceName))
 }
 
 func (sb* Scoreboard) ClearScores() {

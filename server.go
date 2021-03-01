@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
+	"github.com/k-mistele/ccdc-scoreserver/lib/database"
 	"github.com/k-mistele/ccdc-scoreserver/lib/messages"
 	"github.com/k-mistele/ccdc-scoreserver/lib/scoreboard"
 	"github.com/k-mistele/ccdc-scoreserver/lib/service"
-	"github.com/k-mistele/ccdc-scoreserver/lib/database"
 	view_models "github.com/k-mistele/ccdc-scoreserver/lib/view-models"
 	"github.com/labstack/echo/v4"
 	logging "github.com/op/go-logging"
@@ -145,7 +145,7 @@ func main() {
 	})
 
 	// CHANGE THE PASSWORD FOR A SERVICE
-	e.POST("/services/:name/password", func (c echo.Context) error {
+	e.POST("/service/:name/password", func (c echo.Context) error {
 
 		var s *service.Service
 
@@ -171,6 +171,23 @@ func main() {
 		return c.Redirect(http.StatusFound, "/services")
 	})
 
+	// DELETE A SERVICE
+	e.DELETE("/service/:name", func (c echo.Context) error {
+
+		serviceName := c.Param("name")
+		log.Infof("Attempting to delete service %s", serviceName)
+		err := sb.DeleteService(serviceName)
+		if err != nil {
+			log.Errorf("Unable to delete service %s: %s", serviceName, err)
+			messages.Set(c, messages.Error, "Unable to delete service!")
+		} else {
+			log.Infof("Successfully deleted service %s", serviceName)
+			messages.Set(c, messages.Success, "Successfully deleted the service!")
+		}
+
+		return c.String(http.StatusAccepted, "")
+
+	})
 
 	e.GET("/scoring/start", func (c echo.Context) error {
 
