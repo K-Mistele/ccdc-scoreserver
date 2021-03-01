@@ -127,10 +127,21 @@ func main() {
 		var model view_models.ServicesModel
 		model, err := view_models.NewServiceModel(&sb, &c)
 		if err != nil {
-			log.Critical("Error builsing servics model: %s", err)
+			log.Critical("Error building services model: %s", err)
 		}
 
 		return c.Render(http.StatusOK, "services.html", model)
+	})
+
+	// DEFINE THE ADMIN SERVICES ROUTE
+	e.GET("/admin/services/configure", func (c echo.Context) error {
+		var model view_models.AdminServiceConfigModel
+		model, err := view_models.NewAdminServicesConfigModel(&sb, &c)
+		if err != nil {
+			log.Critical("Error building Admin Services Model: %s", err)
+		}
+
+		return c.Render(http.StatusOK, "admin_services_configure.html", model)
 	})
 
 	// CHANGE THE PASSWORD FOR A SERVICE
