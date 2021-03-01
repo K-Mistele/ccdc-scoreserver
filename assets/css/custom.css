@@ -3,12 +3,12 @@ th.fixed-width {
 }
 
 /* SNACKBAR SETTINGS */
-.error {
+.snackbar-error {
     background-color: #e74a3b;
     color: white;
     border-color: #e74a3b;
 }
-.success {
+.snackbar-success {
     background-color: #1cc88a;
     color: white;
     border-color: #1cc88a;

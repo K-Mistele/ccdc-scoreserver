@@ -142,14 +142,14 @@ func main() {
 		s, err := sb.GetService(serviceName)
 
 		if err != nil {
-			log.Errorf("Failed to change password - service %s not found", serviceName)
-			return c.String(http.StatusNotFound, fmt.Sprint(err))
+			messages.Set(c, messages.Error, "Password change failed - service not found!")
+			return c.Redirect(http.StatusFound, "/services")
 		}
 
 		password, confirmPassword := c.FormValue("password"), c.FormValue("confirmPassword")
 		if password != confirmPassword {
-			log.Errorf("Failed to change password - passwords don't match!")
-			return c.String(http.StatusBadRequest, "Passwords do not match!")
+			messages.Set(c, messages.Error, "Password change failed - passwords must match!")
+			return c.Redirect(http.StatusFound, "/services")
 		}
 
 		s.ChangePassword(password)

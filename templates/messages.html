@@ -6,15 +6,17 @@
     {{ if .Success }}
 
         {{ range .Success }}
-            <div class="success alert alert-warning alert-dismissible" role="alert">
+            <div class="snackbar-success alert alert-warning alert-dismissible" role="alert">
                 {{.}}
             </div>
         {{ end }}
     {{ end }}
     {{ if .Error }}
-    <div class="error alert alert-warning alert-dismissible" role="alert">
-        {{.}}
-    </div>
+        {{ range .Error }}
+            <div class="snackbar-error alert alert-warning alert-dismissible" role="alert">
+                {{.}}
+            </div>
+        {{end}}
     {{end}}
 
     <!-- SUPPORTING SCRIPT -->
