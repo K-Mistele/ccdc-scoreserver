@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/k-mistele/ccdc-scoreserver/lib/messages"
 	"github.com/k-mistele/ccdc-scoreserver/lib/scoreboard"
 	"github.com/k-mistele/ccdc-scoreserver/lib/service"
 	"github.com/k-mistele/ccdc-scoreserver/lib/database"
@@ -153,6 +154,9 @@ func main() {
 
 		s.ChangePassword(password)
 		log.Infof("Changed password for service %s", serviceName)
+
+		// FLASH A MESSAGE
+		messages.Set(c, messages.Success, "Password successfully changed!")
 		return c.Redirect(http.StatusFound, "/services")
 	})
 
