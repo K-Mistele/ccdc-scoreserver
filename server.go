@@ -35,8 +35,6 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 
 func main() {
 
-
-
 	// ENABLE LOG LEVELS
 	// For demo purposes, create two backend for os.Stderr.
 	backend1 := logging.NewLogBackend(os.Stderr, "", 0)
@@ -75,28 +73,28 @@ func main() {
 		Points:            10,
 	}
 
-	var s2 = service.Service {
-		Host:				"10.0.1.52",
-		Port: 				5900,
-		Name: 				"Squirtle-VNC",
-		TransportProtocol:  "tcp",
-		Username: 			"",
-		Password:			"password",
-		ServiceCheck:		service.VNCConnectCheck,
-		ServiceCheckData:   nil,
-		Points:				10,
+	var s2 = service.Service{
+		Host:              "10.0.1.52",
+		Port:              5900,
+		Name:              "Squirtle-VNC",
+		TransportProtocol: "tcp",
+		Username:          "",
+		Password:          "password",
+		ServiceCheck:      service.VNCConnectCheck,
+		ServiceCheckData:  nil,
+		Points:            10,
 	}
 
-	var s3 = service.Service {
-		Host:				"10.0.1.52",
-		Port: 				8080,
-		Name: 				"Squirtle-Should-Fail",
-		TransportProtocol:  "tcp",
-		Username: 			"",
-		Password:			"password",
-		ServiceCheck:		service.HTTPGetStatusCodeCheck,
-		ServiceCheckData:   map[string]interface{}{},
-		Points:				10,
+	var s3 = service.Service{
+		Host:              "10.0.1.52",
+		Port:              8080,
+		Name:              "Squirtle-Should-Fail",
+		TransportProtocol: "tcp",
+		Username:          "",
+		Password:          "password",
+		ServiceCheck:      service.HTTPGetStatusCodeCheck,
+		ServiceCheckData:  map[string]interface{}{},
+		Points:            10,
 	}
 	s3.ServiceCheckData["url"] = "/"
 	s3.ServiceCheckData["expectedCode"] = "200"
@@ -105,13 +103,12 @@ func main() {
 	sb.Services = append(sb.Services, s2)
 	sb.Services = append(sb.Services, s3)
 
-
 	// INITIALIZE THE APP, SETTING UP A DEFAULT ROUTE AND STATIC DIRECTORY
 	e := echo.New()
 	e.Renderer = t
 
 	// DEFINE THE SCOREBOARD ROUTE
-	e.GET("/", func (c echo.Context) error {
+	e.GET("/", func(c echo.Context) error {
 
 		var model view_models.IndexModel
 		model, err := view_models.NewIndexModel(&sb, &c)
@@ -123,7 +120,7 @@ func main() {
 	})
 
 	// DEFINE THE SERVICES ROUTES
-	e.GET("/services", func (c echo.Context) error {
+	e.GET("/services", func(c echo.Context) error {
 		var model view_models.ServicesModel
 		model, err := view_models.NewServiceModel(&sb, &c)
 		if err != nil {
@@ -134,7 +131,7 @@ func main() {
 	})
 
 	// DEFINE THE ADMIN SERVICES ROUTE
-	e.GET("/admin/services/configure", func (c echo.Context) error {
+	e.GET("/admin/services/configure", func(c echo.Context) error {
 		var model view_models.AdminServiceConfigModel
 		model, err := view_models.NewAdminServicesConfigModel(&sb, &c)
 		if err != nil {
@@ -145,7 +142,7 @@ func main() {
 	})
 
 	// CHANGE THE PASSWORD FOR A SERVICE
-	e.POST("/service/:name/password", func (c echo.Context) error {
+	e.POST("/service/:name/password", func(c echo.Context) error {
 
 		var s *service.Service
 
@@ -172,7 +169,7 @@ func main() {
 	})
 
 	// DELETE A SERVICE
-	e.DELETE("/service/:name", func (c echo.Context) error {
+	e.DELETE("/service/:name", func(c echo.Context) error {
 
 		serviceName := c.Param("name")
 		log.Infof("Attempting to delete service %s", serviceName)
@@ -189,14 +186,46 @@ func main() {
 
 	})
 
-	e.GET("/scoring/start", func (c echo.Context) error {
+	// UPDATE A SERVICE
+	e.PATCH("/service/:name", func(c echo.Context) error {
+
+		serviceName := c.Param("name")
+		log.Infof("Attempting to update service %s", serviceName)
+
+		// GET STUFF FROM THE FORM
+		host, portStr := c.FormValue("host"), c.FormValue("port")
+		transportProto, username := c.FormValue("transportProtocol"), c.FormValue("username")
+		password := c.FormValue("password")
+
+		// CONVERT PORT TO AN INTEGER
+		port, err := strconv.Atoi(portStr)
+		if err != nil {
+			messages.Set(c, messages.Error, "Port must be a number!")
+			return c.String(http.StatusBadRequest, "")
+		}
+
+		// UPDATE THE SERVICE
+		err = sb.UpdateService(serviceName, host, port, transportProto, username, password)
+		if err != nil {
+			log.Errorf("Unable to update services %s: %s", serviceName, err)
+			messages.Set(c, messages.Error, "Unable to update service!")
+		} else {
+			log.Infof("Successfully updated service %s", serviceName)
+			messages.Set(c, messages.Success, "Successfully updated the service!")
+		}
+
+		return c.String(http.StatusAccepted, "")
+
+	})
+
+	e.GET("/scoring/start", func(c echo.Context) error {
 
 		var intervalInt, hoursInt, minutesInt int
 		var err error
 
 		interval, hours, minutes := c.QueryParam("interval"), c.QueryParam("hours"), c.QueryParam("minutes")
 		if intervalInt, err = strconv.Atoi(interval); err != nil {
-			intervalInt	 = 60
+			intervalInt = 60
 		}
 		if hoursInt, err = strconv.Atoi(hours); err != nil {
 			return c.String(http.StatusBadRequest, "You must specify a number of hours to run for!")
@@ -204,8 +233,6 @@ func main() {
 		if minutesInt, err = strconv.Atoi(minutes); err != nil {
 			minutesInt = 0
 		}
-
-
 
 		if !sb.Running {
 			sb.StartScoring(time.Duration(intervalInt), time.Duration(hoursInt), time.Duration(minutesInt))
@@ -215,13 +242,13 @@ func main() {
 		}
 	})
 
-	e.GET("/scoring/restart", func (c echo.Context) error {
+	e.GET("/scoring/restart", func(c echo.Context) error {
 		var intervalInt, hoursInt, minutesInt int
 		var err error
 
 		interval, hours, minutes := c.QueryParam("interval"), c.QueryParam("hours"), c.QueryParam("minutes")
 		if intervalInt, err = strconv.Atoi(interval); err != nil {
-			intervalInt	 = 60
+			intervalInt = 60
 		}
 		if hoursInt, err = strconv.Atoi(hours); err != nil {
 			return c.String(http.StatusBadRequest, "You must specify a number of hours to run for!")
@@ -230,12 +257,11 @@ func main() {
 			minutesInt = 0
 		}
 
-
 		sb.RestartScoring(time.Duration(intervalInt), time.Duration(hoursInt), time.Duration(minutesInt))
 		return c.String(http.StatusOK, "Scoring restarted!")
 	})
 
-	e.GET("/scoring/stop", func (c echo.Context) error {
+	e.GET("/scoring/stop", func(c echo.Context) error {
 		if err := sb.StopScoring(); err != nil {
 			return c.String(http.StatusForbidden, "Unable to stop the scoreboard - it is not running!")
 		} else {
@@ -243,12 +269,12 @@ func main() {
 		}
 	})
 
-	e.GET("/test-mongo", func (c echo.Context) error {
+	e.GET("/test-mongo", func(c echo.Context) error {
 		databases := database.ListDatabases()
 		return c.String(http.StatusOK, fmt.Sprintf("%v", databases))
 	})
 
-	e.GET("/test-collections", func (c echo.Context) error {
+	e.GET("/test-collections", func(c echo.Context) error {
 		//scoreboard.GetAllServiceChecks()
 		//scoreboard.GetAllScoreboardChecks()
 

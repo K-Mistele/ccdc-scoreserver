@@ -12,6 +12,7 @@ type AdminServiceConfigCard struct {
 	Port					int
 	Name					string
 	Username 				string
+	Password 				string
 	TransportProtocol 		string
 	Status					bool
 }
@@ -44,6 +45,7 @@ func NewAdminServicesConfigModel(sb *scoreboard.Scoreboard, c *echo.Context) (Ad
 			Port: 				s.Port,
 			Name: 				s.Name,
 			Username: 			s.Username,
+			Password: 			s.Password,
 			TransportProtocol: 	s.TransportProtocol,
 			Status: 			serviceIsUp,
 

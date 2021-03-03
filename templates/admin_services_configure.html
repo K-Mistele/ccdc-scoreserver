@@ -73,7 +73,8 @@
                                     class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                                 <h6 class="m-0 font-weight-bold text-primary">{{ .Name }}</h6>
                                 <div class="dropdown no-arrow">
-                                    <a class="dropdown-toggle" href="#" role="button" id="{{ .Name }}-dropdown-menu-link"
+                                    <a class="dropdown-toggle" href="#" role="button"
+                                       id="{{ .Name }}-dropdown-menu-link"
                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
                                     </a>
@@ -82,15 +83,81 @@
                                         <div class="dropdown-header">Actions:</div>
 
                                         <!-- TODO THIS SHOULD BE A FORM OR JAVASCRIPT ONCLICK HERE -->
-                                        <a class="dropdown-item" onclick="deleteService('{{ .Name }}')"> <span class="text-danger">Delete</span></a>
+                                        <a class="dropdown-item" onclick="deleteService('{{ .Name }}')"> <span
+                                                class="text-danger">Delete</span></a>
                                     </div>
                                 </div>
                             </div>
                             <!-- Card Body -->
-                            <div class="card-body">
-                                Dropdown menus can be placed in the card header in order to extend the functionality
-                                of a basic card. In this dropdown card example, the Font Awesome vertical ellipsis
-                                icon in the card header can be clicked on in order to toggle a dropdown menu.
+                            <div class="card-body col-12 col-md-12">
+                                <!-- FORM FILLED WITH THE STUFF THAT THEY CAN CHANGE -->
+                                <div class="row">
+                                    <div class="col-12 col-md-6">
+                                        <!-- HOST-->
+                                        <div class="form-group row">
+                                            <div class="col-md-3">
+                                                <label for="{{.Name}}-host">Host</label>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <input type="text" id="{{.Name}}-host" value="{{.Host}}">
+                                            </div>
+
+                                        </div>
+
+                                        <!-- PORT -->
+                                        <div class="form-group row">
+                                            <div class="col-md-3">
+                                                <label for="{{.Name}}-port">Port</label>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <input type="number" id="{{.Name}}-port" value="{{.Port}}">
+                                            </div>
+                                        </div>
+                                        <!-- TRANSPORT PROTOCOL -->
+                                        <div class="form-group row">
+                                            <div class="col-md-3">
+                                                <label for="{{.Name}}-transport-protocol">Transport</label>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <input type="text" id="{{.Name}}-transport-protocol"
+                                                       value="{{.TransportProtocol}}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <!-- USERNAME -->
+                                        <div class="form-group row">
+                                            <div class="col-md-3">
+                                                <label for="{{.Name}}-username">Username</label>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <input type="text" id="{{.Name}}-username"
+                                                       value="{{.Username}}">
+                                            </div>
+                                        </div>
+                                        <!-- PASSWORD -->
+                                        <div class="form-group row">
+                                            <div class="col-md-3">
+                                                <label for="{{.Name}}-password">Password</label>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <input type="password" id="{{.Name}}-password"
+                                                       value="{{.Password}}">
+                                            </div>
+                                        </div>
+                                        <!-- PASSWORD -->
+                                        <div class="form-group row">
+                                            <div class="col-md-3">
+
+                                            </div>
+                                            <div class="col-md-9">
+                                                <a onclick="updateService('{{.Name}}')" class="btn btn-primary">Update</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
                             </div>
                         </div>
                         {{ end }}

@@ -64,6 +64,27 @@ func (sb *Scoreboard) DeleteService(serviceName string) error {
 	return errors.New(fmt.Sprintf("unable to delete services %s from scoreboard - unable to find it", serviceName))
 }
 
+// UPDATE A service.Service IN THE SCOREBOARD WITH THE MATCHING NAME, OR RETURN AN ERROR
+func (sb *Scoreboard) UpdateService(serviceName string,
+	host string,
+	port int,
+	transportProto string,
+	username string,
+	password string) error {
+
+	// GET A POINTER TO THE SERVICE
+	s, err := sb.GetService(serviceName)
+	if err != nil {
+		return err
+	}
+	s.Host = host
+	s.Port = port
+	s.TransportProtocol = transportProto
+	s.Username = username
+	s.Password = password
+	return nil
+}
+
 func (sb* Scoreboard) ClearScores() {
 
 	// SET UP A CLIENT
