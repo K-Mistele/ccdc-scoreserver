@@ -10,6 +10,22 @@ var log = logging.MustGetLogger("main")
 // DEFINE A TYPE OF FUNCTION THAT TAKES A SERVICE AS A PARAM
 type ServiceCheck func(s *Service) (bool, error)
 
+var serviceChecks = map[string]ServiceCheck {
+	"LDAPUserQuery": LDAPUserQuery,
+	"MinioLoginCheck": MinioLoginCheck,
+	"MinioBucketCheck": MinioBucketCheck,
+	"FTPCRUDCheck": FTPCRUDCheck,
+	"HTTPGetContentsCheck": HTTPGetContentsCheck,
+	"HTTPGetStatusCodeCheck": HTTPGetStatusCodeCheck,
+	"HTTPPostContentsCheck": HTTPPostContentsCheck,
+	"POP3BasicAuthCheck": POP3BasicAuthCheck,
+	"SMBListSharesCheck": SMBListSharesCheck,
+	"SMTPSendCheck": SMTPSendCheck,
+	"SSHLoginCheck": SSHLoginCheck,
+	"SimpleTCPCheck": SimpleTCPCheck,
+	"VNCConnectCheck": VNCConnectCheck
+}
+
 // THE SERVICE TYPE
 type Service struct {
 	Host              string // IP ADDRESS OR HOSTNAME
@@ -21,6 +37,11 @@ type Service struct {
 	ServiceCheck      ServiceCheck           // STRING THAT'S A SUPPORTED SERVICE CHECK TYPE
 	ServiceCheckData  map[string]interface{} // DEPENDS ON THE DATA REQUIRED BY THE CHECK, HENCE MAP
 	Points            int
+}
+
+// CONSTRUCT A NEW SERVICE
+func NewService () (*Service, error) {
+	return nil, nil
 }
 
 // SERVICE METHODS
