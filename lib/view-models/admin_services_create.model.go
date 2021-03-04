@@ -1,7 +1,6 @@
 package view_models
 
 import (
-	"github.com/k-mistele/ccdc-scoreserver/lib/scoreboard"
 	"github.com/k-mistele/ccdc-scoreserver/lib/service"
 	"github.com/labstack/echo/v4"
 )
@@ -14,12 +13,14 @@ type AdminServicesCreateModel struct {
 }
 
 // BUILD AN AdminServiceCreateModel AND RETURN IT FOR A ROUTE
-func NewAdminServicesCreateModel(sb *scoreboard.Scoreboard, c *echo.Context) (AdminServicesCreateModel, error) {
+func NewAdminServicesCreateModel(c *echo.Context) (AdminServicesCreateModel, error) {
 
+	log.Debug("Creating /admin/services/create model")
 	model := AdminServicesCreateModel{
 		Messages: 					NewMessagesModel(c),
 		AvailableServiceChecks: 	[]string{},
 	}
+	log.Debug(model.Messages)
 
 	// BUILD THE LIST OF AVAILABLE SERVICE CHECKS
 	for key := range service.ServiceChecks {

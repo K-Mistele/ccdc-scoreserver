@@ -23,7 +23,7 @@ var ServiceCheckParams = map[string][]string {
 	"MinioBucketCheck": {},
 	"FTPCRUDCheck": {"filename"},
 	"HTTPGetContentsCheck": {"fullURL", "expectedContents"},
-	"HTTPGetStatusCodeCheck": {"relativeURL, expectedCode"},
+	"HTTPGetStatusCodeCheck": {"relativeURL", "expectedCode"},
 	"POP3BasicAuthCheck": {},
 	"SMBListSharesCheck": {},
 	"SMTPSendCheck": {"destinationUser"},

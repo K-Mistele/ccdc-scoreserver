@@ -20,6 +20,10 @@
     <!-- Custom styles for this template-->
     <link href="/assets/css/sb-admin-2.min.css" rel="stylesheet">
 
+    <!-- CUSTOM STYLESHEET -->
+    <link rel="stylesheet" href="/assets/css/custom.css">
+
+
     <!-- CUSTOM SCRIPTS -->
     <script src="/assets/js/admin/createService.js"></script>
 
@@ -60,6 +64,7 @@
                             </div>
                             <div class="card-body">
 
+                                <!-- INPUT ROW -->
                                 <div class="row">
 
                                     <!-- BASIC CONFIGURATION -->
@@ -145,6 +150,7 @@
                                             </div>
                                             <div class="col-md-9">
                                                 <input class="form-control" type="text" id="serviceUsername">
+                                                <small>Depending on check type, this may be optional</small>
 
                                             </div>
                                         </div>
@@ -156,17 +162,36 @@
                                             </div>
                                             <div class="col-md-9">
                                                 <input class="form-control" type="text" id="servicePassword">
+                                                <small>Depending on check type, this may be optional</small>
 
                                             </div>
                                         </div>
+
+                                        <!-- CONTAIN ADDITIONAL PARAMETERS FOR THE SERVICE CHECK -->
+                                        <div id="param-container">
+
+                                        </div>
+
                                     </div>
                                 </div>
+
+                                <!-- BUTTON ROW -->
+                                <div class="row justify-content-center">
+                                    <div class="col-12 col-md-4">
+                                        <button class="btn btn-primary btn-block" onclick="createService()">
+                                            Create
+                                        </button>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </div>
 
                     <!-- EMPTY RN -->
-                    <div class="col-12 col-md-6"></div>
+                    <div class="col-12 col-md-3">
+
+                    </div>
 
                 </div>
 
@@ -216,6 +241,9 @@
         </div>
     </div>
 </div>
+
+<!-- MESSAGES TOASTER -->
+{{ template "messages.html" .Messages }}
 
 <!-- Bootstrap core JavaScript-->
 <script src="/assets/vendor/jquery/jquery.min.js"></script>

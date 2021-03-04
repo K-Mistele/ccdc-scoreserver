@@ -77,3 +77,5 @@ func GetServiceParams(serviceName string) ([]string, error ){
 
 	return []string{}, errors.New("no service found with that name")
 }
+
+// A FUNCTION TO CREATE A NEW SERVICE FROM A FORM SUBMISSION ON THE SITE

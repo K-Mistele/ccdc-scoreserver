@@ -144,7 +144,7 @@ func main() {
 	// DEFINE THE ROUTE FOR CREATING SERICES (FOR ADMINS ONLY)
 	e.GET("/admin/services/add", func (c echo.Context) error {
 
-		model, err  := view_models.NewAdminServicesCreateModel(&sb, &c)
+		model, err  := view_models.NewAdminServicesCreateModel(&c)
 		if err != nil {
 			messages.Set(c, messages.Error, fmt.Sprint(err))
 		}
@@ -239,6 +239,48 @@ func main() {
 
 	})
 
+	// CREATE A SERVICE
+	e.PUT("/service/:name", func (c echo.Context) error {
+
+		// ENSURE WE'RE NOT ADDING A DUPLICATE
+		serviceName := c.Param("name")
+		_, err := sb.GetService(serviceName)
+		if err == nil {
+			messages.Set(c, messages.Error, "A service with that name already exists!")
+			return c.String(http.StatusForbidden, "A service with that name already exists!")
+		}
+
+		port, err := strconv.Atoi(c.FormValue("port"))
+		if err != nil {
+			messages.Set(c, messages.Error, "Port must be an integer!")
+			return c.String(http.StatusBadRequest, "Port must be an integer!");
+		}
+
+		// CREATE A SERVICE CHECK
+		s := service.Service {
+			Host: 				c.FormValue("host"),
+			Port: 				port,
+			Name:				c.FormValue("name"),
+			TransportProtocol: 	c.FormValue("proto"),
+			Username: 			c.FormValue("username"),
+			Password: 			c.FormValue("password"),
+			ServiceCheck:		service.ServiceChecks[c.FormValue("checkType")],
+			Points: 			10,
+			ServiceCheckData: 	map[string]interface{}{},
+		}
+
+		// ADD PARAMS
+		for _, param := range service.ServiceCheckParams[c.FormValue("checkType")] {
+			s.ServiceCheckData[param] = c.FormValue(param)
+		}
+		log.Infof("Creating new service %v", s)
+
+		messages.Set(c, messages.Success, "Service created!")
+		return c.String(http.StatusCreated, "Service created!")
+
+	})
+
+	// START SCORING
 	e.GET("/scoring/start", func(c echo.Context) error {
 
 		var intervalInt, hoursInt, minutesInt int
