@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/k-mistele/ccdc-scoreserver/lib/database"
 	"github.com/k-mistele/ccdc-scoreserver/lib/messages"
 	"github.com/k-mistele/ccdc-scoreserver/lib/scoreboard"
 	"github.com/k-mistele/ccdc-scoreserver/lib/service"
@@ -275,6 +274,8 @@ func main() {
 		}
 		log.Infof("Creating new service %v", s)
 
+		sb.Services = append(sb.Services, s)
+
 		messages.Set(c, messages.Success, "Service created!")
 		return c.String(http.StatusCreated, "Service created!")
 
@@ -330,18 +331,6 @@ func main() {
 		} else {
 			return c.String(http.StatusOK, "Scoring stopped!")
 		}
-	})
-
-	e.GET("/test-mongo", func(c echo.Context) error {
-		databases := database.ListDatabases()
-		return c.String(http.StatusOK, fmt.Sprintf("%v", databases))
-	})
-
-	e.GET("/test-collections", func(c echo.Context) error {
-		//scoreboard.GetAllServiceChecks()
-		//scoreboard.GetAllScoreboardChecks()
-
-		return c.String(http.StatusOK, "check logs")
 	})
 
 	e.Static("/assets", "assets")

@@ -1,7 +1,7 @@
 package service
 
 // A MAP THAT LISTS ALL POSSIBLE ServiceChecks SO THAT THE FRONT END CAN USE IT TO
-// COSTRUCT OBJECTS. ALL ServiceChecks MUST BE REGISTERED HERE
+// CONSTRUCT OBJECTS. ALL ServiceChecks MUST BE REGISTERED HERE
 var ServiceChecks = map[string]ServiceCheck {
 	"LDAPUserQuery": LDAPUserQuery,
 	"MinioLoginCheck": MinioLoginCheck,
