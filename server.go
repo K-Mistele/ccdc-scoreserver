@@ -141,6 +141,27 @@ func main() {
 		return c.Render(http.StatusOK, "admin_services_configure.html", model)
 	})
 
+	// DEFINE THE ROUTE FOR CREATING SERICES (FOR ADMINS ONLY)
+	e.GET("/admin/services/add", func (c echo.Context) error {
+
+		model, err  := view_models.NewAdminServicesCreateModel(&sb, &c)
+		if err != nil {
+			messages.Set(c, messages.Error, fmt.Sprint(err))
+		}
+		return c.Render(http.StatusOK, "admin_services_add.html", model)
+	})
+
+	// GET THE PARAMETERS IF ANY FOR A SERVICE
+	e.GET("/servicecheck/:name/params", func (c echo.Context) error {
+
+		serviceName := c.Param("name")
+		params, err := service.GetServiceParams(serviceName)
+		if err != nil {
+			params = []string{}
+		}
+		return c.JSON(http.StatusOK, params)
+	})
+
 	// CHANGE THE PASSWORD FOR A SERVICE
 	e.POST("/service/:name/password", func(c echo.Context) error {
 

@@ -3,28 +3,13 @@ package service
 import (
 	logging "github.com/op/go-logging"
 	"sync"
+	"errors"
 )
 
 var log = logging.MustGetLogger("main")
 
 // DEFINE A TYPE OF FUNCTION THAT TAKES A SERVICE AS A PARAM
 type ServiceCheck func(s *Service) (bool, error)
-
-var serviceChecks = map[string]ServiceCheck {
-	"LDAPUserQuery": LDAPUserQuery,
-	"MinioLoginCheck": MinioLoginCheck,
-	"MinioBucketCheck": MinioBucketCheck,
-	"FTPCRUDCheck": FTPCRUDCheck,
-	"HTTPGetContentsCheck": HTTPGetContentsCheck,
-	"HTTPGetStatusCodeCheck": HTTPGetStatusCodeCheck,
-	"HTTPPostContentsCheck": HTTPPostContentsCheck,
-	"POP3BasicAuthCheck": POP3BasicAuthCheck,
-	"SMBListSharesCheck": SMBListSharesCheck,
-	"SMTPSendCheck": SMTPSendCheck,
-	"SSHLoginCheck": SSHLoginCheck,
-	"SimpleTCPCheck": SimpleTCPCheck,
-	"VNCConnectCheck": VNCConnectCheck
-}
 
 // THE SERVICE TYPE
 type Service struct {
@@ -80,4 +65,15 @@ func (s Service) CheckPassed() {
 // CHANGE THE PASSWORD FOR A SERVICE
 func (s *Service) ChangePassword(password string) {
 	(*s).Password = password
+}
+
+// A FUNCTION TO GET A LIST OF SERVICE PARAMETERS GIVEN THE NAME OF A Service
+func GetServiceParams(serviceName string) ([]string, error ){
+	for key := range ServiceCheckParams {
+		if serviceName == key {
+			return ServiceCheckParams[key], nil
+		}
+	}
+
+	return []string{}, errors.New("no service found with that name")
 }
