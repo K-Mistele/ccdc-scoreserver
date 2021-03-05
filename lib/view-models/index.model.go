@@ -1,12 +1,10 @@
 package view_models
 
 import (
-	"github.com/k-mistele/ccdc-scoreserver/lib/constants"
 	"github.com/k-mistele/ccdc-scoreserver/lib/scoreboard"
 	"github.com/labstack/echo/v4"
 	"github.com/op/go-logging"
 	"sync"
-	"time"
 )
 
 var log = logging.MustGetLogger("main")
@@ -110,14 +108,7 @@ func NewIndexModel(sb *scoreboard.Scoreboard, c *echo.Context) (IndexModel, erro
 	//log.Debugf("%d:%d", numberUpServices, numberDownServices)
 
 	// GET TIME STARTED AT
-	var timeStarted, timeFinished string
-	if !sb.Running {
-		timeStarted = "00:00"
-		timeFinished = "00:00"
-	} else {
-		timeStarted = time.Unix(sb.TimeStarted, 0).In(constants.ServerTime).Format("15:04")
-		timeFinished = time.Unix(sb.TimeFinishes, 0).In(constants.ServerTime).Format("15:04")
-	}
+	timeStarted, timeFinished := sb.GetStartEndTimes()
 
 	overview = Overview{
 		TimeStartedAt: 				timeStarted,

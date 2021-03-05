@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/k-mistele/ccdc-scoreserver/lib/constants"
 	"github.com/k-mistele/ccdc-scoreserver/lib/database"
 	"github.com/k-mistele/ccdc-scoreserver/lib/service"
 	logging "github.com/op/go-logging"
@@ -242,3 +243,15 @@ func (sb *Scoreboard) runScoreCheck() {
 
 }
 
+func (sb *Scoreboard) GetStartEndTimes() (timeStarted string, timeFinished string) {
+
+	if !sb.Running {
+		timeStarted = "00:00"
+		timeFinished = "00:00"
+	} else {
+		timeStarted = time.Unix(sb.TimeStarted, 0).In(constants.ServerTime).Format("15:04")
+		timeFinished = time.Unix(sb.TimeFinishes, 0).In(constants.ServerTime).Format("15:04")
+	}
+
+	return timeStarted, timeFinished
+}

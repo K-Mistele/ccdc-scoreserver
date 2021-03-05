@@ -7,6 +7,7 @@ import (
 	"github.com/k-mistele/ccdc-scoreserver/lib/service"
 	view_models "github.com/k-mistele/ccdc-scoreserver/lib/view-models"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	logging "github.com/op/go-logging"
 	"html/template"
 	"io"
@@ -104,6 +105,7 @@ func main() {
 
 	// INITIALIZE THE APP, SETTING UP A DEFAULT ROUTE AND STATIC DIRECTORY
 	e := echo.New()
+	e.Use(middleware.Recover())
 	e.Renderer = t
 
 	// DEFINE THE SCOREBOARD ROUTE
@@ -148,6 +150,15 @@ func main() {
 			messages.Set(c, messages.Error, fmt.Sprint(err))
 		}
 		return c.Render(http.StatusOK, "admin_services_add.html", model)
+	})
+
+	// DEFINE THE ROUTE FOR MANAGING SCORING FOR ADMINS
+	e.GET("/admin/scoring", func ( c echo.Context) error {
+		model, err := view_models.NewAdminScoringModel(&sb, &c)
+		if err != nil {
+			messages.Set(c, messages.Error, fmt.Sprint(err))
+		}
+		return c.Render(http.StatusOK, "admin_scoring.html", model)
 	})
 
 	// GET THE PARAMETERS IF ANY FOR A SERVICE
@@ -282,12 +293,12 @@ func main() {
 	})
 
 	// START SCORING
-	e.GET("/scoring/start", func(c echo.Context) error {
+	e.POST("/scoring/start", func(c echo.Context) error {
 
 		var intervalInt, hoursInt, minutesInt int
 		var err error
 
-		interval, hours, minutes := c.QueryParam("interval"), c.QueryParam("hours"), c.QueryParam("minutes")
+		interval, hours, minutes := c.FormValue("interval"), c.FormValue("hours"), c.FormValue("minutes")
 		if intervalInt, err = strconv.Atoi(interval); err != nil {
 			intervalInt = 60
 		}
@@ -299,18 +310,25 @@ func main() {
 		}
 
 		if !sb.Running {
-			sb.StartScoring(time.Duration(intervalInt), time.Duration(hoursInt), time.Duration(minutesInt))
-			return c.String(http.StatusOK, "Scoring started!")
+			err = sb.StartScoring(time.Duration(intervalInt), time.Duration(hoursInt), time.Duration(minutesInt))
+
+			if err != nil {
+				messages.Set(c, messages.Error, fmt.Sprint(err))
+			} else {
+				messages.Set(c, messages.Success, "Scoring started!")
+			}
+
 		} else {
-			return c.String(http.StatusForbidden, "Scoring has already been started!")
+			messages.Set(c, messages.Error, "Scoring is already running!")
 		}
+		return c.Redirect(http.StatusFound, "/admin/scoring")
 	})
 
-	e.GET("/scoring/restart", func(c echo.Context) error {
+	e.POST("/scoring/restart", func(c echo.Context) error {
 		var intervalInt, hoursInt, minutesInt int
 		var err error
 
-		interval, hours, minutes := c.QueryParam("interval"), c.QueryParam("hours"), c.QueryParam("minutes")
+		interval, hours, minutes := c.FormValue("interval"), c.FormValue("hours"), c.FormValue("minutes")
 		if intervalInt, err = strconv.Atoi(interval); err != nil {
 			intervalInt = 60
 		}
@@ -322,15 +340,17 @@ func main() {
 		}
 
 		sb.RestartScoring(time.Duration(intervalInt), time.Duration(hoursInt), time.Duration(minutesInt))
-		return c.String(http.StatusOK, "Scoring restarted!")
+		messages.Set(c, messages.Success, "Scoring restarted!")
+		return c.Redirect(http.StatusFound, "/admin/scoring")
 	})
 
-	e.GET("/scoring/stop", func(c echo.Context) error {
+	e.POST("/scoring/stop", func(c echo.Context) error {
 		if err := sb.StopScoring(); err != nil {
-			return c.String(http.StatusForbidden, "Unable to stop the scoreboard - it is not running!")
+			messages.Set(c, messages.Error, fmt.Sprint(err))
 		} else {
-			return c.String(http.StatusOK, "Scoring stopped!")
+			messages.Set(c, messages.Success, "Scoring stopped!")
 		}
+		return c.Redirect(http.StatusFound, "/admin/scoring")
 	})
 
 	e.Static("/assets", "assets")
