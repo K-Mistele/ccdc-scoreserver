@@ -59,49 +59,8 @@ func main() {
 		templates: template.Must(template.ParseGlob("templates/*.html")),
 	}
 
+	// CREATE A SCOREBOARD
 	var sb = scoreboard.NewScoreboard()
-
-	var s1 = service.Service{
-		Host:              "10.0.1.51",
-		Port:              445,
-		Name:              "Charizard-DC-SMB",
-		TransportProtocol: "tcp",
-		Username:          "Administrator",
-		Password:          "Password1!",
-		ServiceCheck:      service.SMBListSharesCheck,
-		ServiceCheckData:  map[string]interface{}{},
-		Points:            10,
-	}
-
-	var s2 = service.Service{
-		Host:              "10.0.1.52",
-		Port:              5900,
-		Name:              "Squirtle-VNC",
-		TransportProtocol: "tcp",
-		Username:          "",
-		Password:          "password",
-		ServiceCheck:      service.VNCConnectCheck,
-		ServiceCheckData:  nil,
-		Points:            10,
-	}
-
-	var s3 = service.Service{
-		Host:              "10.0.1.52",
-		Port:              8080,
-		Name:              "Squirtle-Should-Fail",
-		TransportProtocol: "tcp",
-		Username:          "",
-		Password:          "password",
-		ServiceCheck:      service.HTTPGetStatusCodeCheck,
-		ServiceCheckData:  map[string]interface{}{},
-		Points:            10,
-	}
-	s3.ServiceCheckData["url"] = "/"
-	s3.ServiceCheckData["expectedCode"] = "200"
-
-	sb.Services = append(sb.Services, s1)
-	sb.Services = append(sb.Services, s2)
-	sb.Services = append(sb.Services, s3)
 
 	// INITIALIZE THE APP, SETTING UP A DEFAULT ROUTE AND STATIC DIRECTORY
 	e := echo.New()
@@ -142,7 +101,7 @@ func main() {
 		return c.Render(http.StatusOK, "admin_services_configure.html", model)
 	})
 
-	// DEFINE THE ROUTE FOR CREATING SERICES (FOR ADMINS ONLY)
+	// DEFINE THE ROUTE FOR CREATING SERVICES (FOR ADMINS ONLY)
 	e.GET("/admin/services/add", func (c echo.Context) error {
 
 		model, err  := view_models.NewAdminServicesCreateModel(&c)
