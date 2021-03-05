@@ -150,11 +150,12 @@ func NewIndexModel(sb *scoreboard.Scoreboard, c *echo.Context) (IndexModel, erro
 	// GET TIMES OF RECENT SCORE CHECKS AS HH:MM
 	var recentScoreCheckTimes []string
 	if len(sb.Services) != 0 {
-		recentScoreCheckTimes, err := scoreboard.GetRecentScoreCheckTimes(numChecksToDisplay, (*sb).Services[0].Name)
+		recentScoreCheckTimes, err = scoreboard.GetRecentScoreCheckTimes(numChecksToDisplay, (*sb).Services[0].Name)
 		if err != nil {
 			log.Errorf("Couldn't get recent score check times: %s", recentScoreCheckTimes)
 		}
 	} else {
+		log.Debug("Couldn't get scoreboard service times")
 		recentScoreCheckTimes = []string{}
 	}
 
