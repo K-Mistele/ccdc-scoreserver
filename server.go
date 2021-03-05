@@ -268,6 +268,11 @@ func main() {
 			minutesInt = 0
 		}
 
+		if minutesInt + hoursInt <= 0 || intervalInt <= 0 {
+			messages.Set(c, messages.Error, "Invalid scoring options! Total time and interval must be > 0")
+			return c.Redirect(http.StatusFound, "/admin/scoring")
+		}
+
 		if !sb.Running {
 			err = sb.StartScoring(time.Duration(intervalInt), time.Duration(hoursInt), time.Duration(minutesInt))
 
@@ -296,6 +301,11 @@ func main() {
 		}
 		if minutesInt, err = strconv.Atoi(minutes); err != nil {
 			minutesInt = 0
+		}
+
+		if minutesInt + hoursInt <= 0 || intervalInt <= 0 {
+			messages.Set(c, messages.Error, "Invalid scoring options! Total time and interval must be > 0")
+			return c.Redirect(http.StatusFound, "/admin/scoring")
 		}
 
 		sb.RestartScoring(time.Duration(intervalInt), time.Duration(hoursInt), time.Duration(minutesInt))
