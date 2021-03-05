@@ -148,10 +148,16 @@ func NewIndexModel(sb *scoreboard.Scoreboard, c *echo.Context) (IndexModel, erro
 
 
 	// GET TIMES OF RECENT SCORE CHECKS AS HH:MM
-	recentScoreCheckTimes, err := scoreboard.GetRecentScoreCheckTimes(numChecksToDisplay, (*sb).Services[0].Name)
-	if err != nil {
-		log.Errorf("Couldn't get recent score check times: %s", recentScoreCheckTimes)
+	var recentScoreCheckTimes []string
+	if len(sb.Services) != 0 {
+		recentScoreCheckTimes, err := scoreboard.GetRecentScoreCheckTimes(numChecksToDisplay, (*sb).Services[0].Name)
+		if err != nil {
+			log.Errorf("Couldn't get recent score check times: %s", recentScoreCheckTimes)
+		}
+	} else {
+		recentScoreCheckTimes = []string{}
 	}
+
 
 	// BUILD THE MAP OF serviceNames TO LISTS OF bools - WHETHER THEY WERE UP OR NOT.
 	// USE A WAITGROUP FOR THIS SINCE WE CAN DO IT CONCURRENTLY
