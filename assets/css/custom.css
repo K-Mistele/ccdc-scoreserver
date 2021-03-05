@@ -59,3 +59,8 @@ div.alert.alert-warning.alert-dismissible {
     from {bottom: 30px; opacity: 1;}
     to {bottom: 0; opacity: 0}
 }
+
+/* OTHER STYLES */
+div.table-container {
+    display: table;
+}
