@@ -8,6 +8,7 @@ import (
 	"github.com/k-mistele/ccdc-scoreserver/lib/database"
 	"github.com/k-mistele/ccdc-scoreserver/lib/service"
 	logging "github.com/op/go-logging"
+	cmap "github.com/orcaman/concurrent-map"
 	"sync"
 	"time"
 )
@@ -213,15 +214,26 @@ func (sb *Scoreboard) runScoreCheck() {
 	wg = sync.WaitGroup{}
 
 	// KICK OFF SERVICE CHECKS
+	// CREATE A CONCURRENT MAP AND USE IT FOR THREADS, AND THEN COPY IT INTO THE NORMAL MAP THAT'S THE SCOREBOARDCHECK.SCORES
+	concurrentMap := cmap.New()
 
 	for _, s = range (*sb).Services {
 		wg.Add(1)
-		go s.DispatchServiceCheck(&(sbc.Scores), &wg)
+		go s.DispatchServiceCheck(&concurrentMap, &wg)
 	}
 
 	// WAIT FOR SERVICE CHECKS TO FINISH
-
 	wg.Wait()
+
+	// COPY VALUES IN CONCURRENT MAP TO SBC.SCORES
+	for _, key := range concurrentMap.Keys() {
+		value, ok := concurrentMap.Get(key)
+		if !ok {
+			log.Errorf("Couldn't get score check for %s from concurrent map!", key)
+		}
+		sbc.Scores[key] = value.(bool)
+	}
+
 
 	// FOR EACH SERVICE IN THE SCOREBOARD CHECK, ADD A SERVICE
 	serviceScoreChecks = make([]ServiceScoreCheck, len(sbc.Scores))
