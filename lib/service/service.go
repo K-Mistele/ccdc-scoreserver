@@ -2,6 +2,7 @@ package service
 
 import (
 	logging "github.com/op/go-logging"
+	cmap "github.com/orcaman/concurrent-map"
 	"sync"
 	"errors"
 )
@@ -32,13 +33,13 @@ func NewService () (*Service, error) {
 // SERVICE METHODS
 
 // DISPATCH THE SERVICE CHECK DEPENDING ON THE TYPE OF CHECK SPECIFIED
-func (s Service) DispatchServiceCheck(results *map[string]bool, wg *sync.WaitGroup){
+func (s Service) DispatchServiceCheck(results *cmap.ConcurrentMap, wg *sync.WaitGroup){
 
 	// RUN THE SERVICE CHECK
 	serviceIsUp, _ := s.ServiceCheck(&s)
 
 	// ADD THE RESULT TO THE MAP
-	(*results)[s.Name] = serviceIsUp
+	(*results).Set(s.Name, serviceIsUp)
 
 	// NOTIFY THE WAITGROUP THAT WE'RE DONE
 	wg.Done()
