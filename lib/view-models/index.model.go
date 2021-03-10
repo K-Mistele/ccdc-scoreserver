@@ -4,6 +4,7 @@ import (
 	"github.com/k-mistele/ccdc-scoreserver/lib/scoreboard"
 	"github.com/labstack/echo/v4"
 	"github.com/op/go-logging"
+	cmap "github.com/orcaman/concurrent-map"
 	"sync"
 )
 
@@ -12,7 +13,7 @@ var numChecksToDisplay = 10
 
 // GOROUTINE TO GET THE MOST RECENT SCORES FOR A scoreboard.ServiceScoreCheck
 // AND ADD THEM TO A MAP. SHOULD BE RUN WITH A WAITGROUP
-func getRecentScoreCheckResults (serviceName string, results *map[string][]bool, wg *sync.WaitGroup) {
+func getRecentScoreCheckResults (serviceName string, results *cmap.ConcurrentMap, wg *sync.WaitGroup) {
 
 	// GET THE SERVICE CHECKS
 	serviceChecks, err := scoreboard.GetRecentScoreChecks(numChecksToDisplay, serviceName)
@@ -28,7 +29,7 @@ func getRecentScoreCheckResults (serviceName string, results *map[string][]bool,
 	}
 
 	// ADD THE SLICE TO THE MAP
-	(*results)[serviceName] = checks
+	(*results).Set(serviceName, checks)
 
 	// NOTIFY THE WAITGROUP WE'RE DONE
 	wg.Done()
@@ -162,17 +163,29 @@ func NewIndexModel(sb *scoreboard.Scoreboard, c *echo.Context) (IndexModel, erro
 
 	// BUILD THE MAP OF serviceNames TO LISTS OF bools - WHETHER THEY WERE UP OR NOT.
 	// USE A WAITGROUP FOR THIS SINCE WE CAN DO IT CONCURRENTLY
+
+	// TODO MAKE THIS A CMAP AND THEN COPY IT INTO A REGULAR MAP
 	services := make(map[string][]bool)
+	concurrentMap := cmap.New()
 	wg := sync.WaitGroup{}
 
 	// KICK OFF THE QUERIES
 	for _, s := range sb.Services {
 		wg.Add(1)
-		go getRecentScoreCheckResults(s.Name, &services, &wg)
+		go getRecentScoreCheckResults(s.Name, &concurrentMap, &wg)
 	}
 
 	// WAIT FOR ALL QUERIES TO FINISH
 	wg.Wait()
+
+	// COPY ALL THE VALUES FROM THE CONCURRENT MAP INTO THE NORMAL ONE
+	for _, key := range concurrentMap.Keys() {
+		v, ok := concurrentMap.Get(key)
+		if !ok {
+			log.Errorf("Couldn't get value %s from concurrent map", key)
+		}
+		services[key] = v.([]bool)
+	}
 
 	scoreboardChart = ScoreboardChart{
 		Times: 		recentScoreCheckTimes,
