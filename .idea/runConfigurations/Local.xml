@@ -3,7 +3,7 @@
     <module name="ccdc-scoreserver" />
     <working_directory value="$PROJECT_DIR$" />
     <go_parameters value="-i" />
-    <kind value="FILE" />
+    <kind value="DIRECTORY" />
     <filePath value="$PROJECT_DIR$/server.go" />
     <package value="github.com/k-mistele/ccdc-scoreserver" />
     <directory value="$PROJECT_DIR$" />
