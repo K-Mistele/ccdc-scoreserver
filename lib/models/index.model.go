@@ -1,4 +1,4 @@
-package view_models
+package models
 
 import (
 	"github.com/k-mistele/ccdc-scoreserver/lib/scoreboard"

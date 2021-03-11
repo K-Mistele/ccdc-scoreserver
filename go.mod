@@ -3,6 +3,7 @@ module github.com/k-mistele/ccdc-scoreserver
 go 1.15
 
 require (
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dutchcoders/goftp v0.0.0-20170301105846-ed59a591ce14
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b // indirect
 	github.com/gorilla/sessions v1.2.1
