@@ -261,3 +261,48 @@ func stopScoring(c echo.Context) error {
 	}
 	return c.Redirect(http.StatusFound, "/admin/scoring")
 }
+
+// ROUTE FOR POST /ADMIN/USERS/ADD
+func addUser(c echo.Context) error {
+
+	// GET ALL FORM PARAMS
+	username := c.FormValue("username")
+	password, confirmPassword := c.FormValue("password"), c.FormValue("confirmPassword")
+	team, isAdmin := c.FormValue("team"), c.FormValue("isAdmin")
+
+	// MAKE SURE THAT THE PASSWORDS MATCH
+	if password != confirmPassword {
+		messages.Set(c, messages.Error, "Username and password must match!")
+		return c.String(http.StatusBadRequest, "")
+	}
+
+	// CHECK TO MAKE SURE THE USER DOESN'T EXIST
+	existingUser, err := auth.GetUserByUsername(username)
+	if err == nil && existingUser != nil {
+		messages.Set(c, messages.Error, "A user with this username already exists!")
+		return c.String(http.StatusForbidden, "")
+	}
+
+	// CREATE THE USER
+	var admin bool
+	if isAdmin == "yes" {
+		admin = true
+	} else {
+		admin = false
+	}
+	user, err := auth.NewUser(username, admin, auth.Team(team), password)
+	if err != nil {
+		messages.Set(c, messages.Error, fmt.Sprintf("Error while trying to create user: %s", err))
+		return c.String(http.StatusInternalServerError, "")
+	}
+	err = user.Store()
+	if err != nil {
+		messages.Set(c, messages.Error, "Unable to store the newly creater user!")
+		return c.String(http.StatusInternalServerError, "")
+	}
+
+	messages.Set(c, messages.Success, "Successfully created a new user!")
+	return c.String(http.StatusCreated,"")
+
+
+}

@@ -71,3 +71,14 @@ func adminScoring( c echo.Context) error {
 	}
 	return c.Render(http.StatusOK, "admin_scoring.html", model)
 }
+
+// ROUTE FOR GET /ADMIN/USERS/ADD
+func adminAddUsers (c echo.Context) error {
+	model, err := models.NewAdminUsersAddModel(&c)
+	log.Debug(model)
+	if err != nil {
+		messages.Set(c, messages.Error, fmt.Sprint(err))
+		log.Error(err)
+	}
+	return c.Render(http.StatusOK, "admin_users_add.html", model)
+}
