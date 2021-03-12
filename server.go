@@ -109,8 +109,8 @@ func main() {
 	e.GET("/logout", logout)
 
 	// CREATE ROUTERS FOR TEAMS
-	blueTeamRouter := e.Group("")
-	blackTeamRouter := e.Group("")
+	blueTeamRouter := e.Group("/blueteam")
+	blackTeamRouter := e.Group("/blackteam", auth.BlackTeamRequired)
 
 	// BLUE TEAM VIEW ROUTES
 	blueTeamRouter.GET("/services", services)
@@ -118,10 +118,10 @@ func main() {
 	//blueTeamRouter.GET("/reports", breachReports)
 
 	// ADMIN GROUP VIEW ROUTES
-	blackTeamRouter.GET("/admin/services/configure", adminConfigureServices)
-	blackTeamRouter.GET("/admin/services/add", adminAddServices)
-	blackTeamRouter.GET("/admin/scoring", adminScoring)
-	blackTeamRouter.GET("/admin/users/add", adminAddUsers)
+	blackTeamRouter.GET("/services/configure", adminConfigureServices)
+	blackTeamRouter.GET("/services/add", adminAddServices)
+	blackTeamRouter.GET("/scoring", adminScoring)
+	blackTeamRouter.GET("/users/add", adminAddUsers)
 
 	/////////////////////////////////////////////////////////////////////////
 	// ROUTES - BACKEND

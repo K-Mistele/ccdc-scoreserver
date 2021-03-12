@@ -31,7 +31,7 @@ func loginPage(c echo.Context) error {
 	return c.Render(http.StatusOK, "login.html", model)
 }
 
-// ROUTE FOR /SERVICES
+// ROUTE FOR /BLUETEAM/SERVICES
 func services(c echo.Context) error {
 	var model models.ServicesModel
 	model, err := models.NewServiceModel(&sb, &c)
@@ -42,7 +42,7 @@ func services(c echo.Context) error {
 	return c.Render(http.StatusOK, "services.html", model)
 }
 
-// ROUTE FOR /ADMIN/SERVICES/CONFIGURE
+// ROUTE FOR /BLACKTEAM/SERVICES/CONFIGURE
 func adminConfigureServices(c echo.Context) error {
 	var model models.AdminServiceConfigModel
 	model, err := models.NewAdminServicesConfigModel(&sb, &c)
@@ -53,7 +53,7 @@ func adminConfigureServices(c echo.Context) error {
 	return c.Render(http.StatusOK, "admin_services_configure.html", model)
 }
 
-// ROUTE FOR /ADMIN/SERVICES/ADD
+// ROUTE FOR /BLACKTEAM/SERVICES/ADD
 func adminAddServices(c echo.Context) error {
 
 	model, err  := models.NewAdminServicesCreateModel(&c)
@@ -63,7 +63,7 @@ func adminAddServices(c echo.Context) error {
 	return c.Render(http.StatusOK, "admin_services_add.html", model)
 }
 
-// ROUTE FOR /ADMIN/SCORING
+// ROUTE FOR /BLACKTEAM/SCORING
 func adminScoring( c echo.Context) error {
 	model, err := models.NewAdminScoringModel(&sb, &c)
 	if err != nil {
@@ -72,7 +72,7 @@ func adminScoring( c echo.Context) error {
 	return c.Render(http.StatusOK, "admin_scoring.html", model)
 }
 
-// ROUTE FOR GET /ADMIN/USERS/ADD
+// ROUTE FOR GET /BLACKTEAM/USERS/ADD
 func adminAddUsers (c echo.Context) error {
 	model, err := models.NewAdminUsersAddModel(&c)
 	log.Debug(model)

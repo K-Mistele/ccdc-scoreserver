@@ -43,10 +43,10 @@ func login(c echo.Context) error {
 		return c.Redirect(http.StatusFound, "/")
 	} else if user.Team == string(auth.Blue) {
 		messages.Set(c, messages.Success, "Welcome, blue team member!")
-		return c.Redirect(http.StatusFound, "/services")
+		return c.Redirect(http.StatusFound, "/blueteam/services")
 	} else if user.Team == string(auth.Black) {
 		messages.Set(c, messages.Success, "Welcome, black team member!")
-		return c.Redirect(http.StatusFound, "/admin/scoring")
+		return c.Redirect(http.StatusFound, "/blackteam/scoring")
 	} else {
 		messages.Set(c, messages.Error, "Successfully logged in, but unable to determine team!")
 		return c.Redirect(http.StatusFound, "/")
@@ -83,13 +83,13 @@ func updateServicePassword(c echo.Context) error {
 
 	if err != nil {
 		messages.Set(c, messages.Error, "Password change failed - service not found!")
-		return c.Redirect(http.StatusFound, "/services")
+		return c.Redirect(http.StatusFound, "/blueteam/services")
 	}
 
 	password, confirmPassword := c.FormValue("password"), c.FormValue("confirmPassword")
 	if password != confirmPassword {
 		messages.Set(c, messages.Error, "Password change failed - passwords must match!")
-		return c.Redirect(http.StatusFound, "/services")
+		return c.Redirect(http.StatusFound, "/blueteam/services")
 	}
 
 	s.ChangePassword(password)
@@ -97,7 +97,7 @@ func updateServicePassword(c echo.Context) error {
 
 	// FLASH A MESSAGE
 	messages.Set(c, messages.Success, "Password successfully changed!")
-	return c.Redirect(http.StatusFound, "/services")
+	return c.Redirect(http.StatusFound, "/blueteam/services")
 }
 
 // ROUTE FOR DELETE /SERVICE/:NAME
@@ -212,7 +212,7 @@ func startScoring(c echo.Context) error {
 
 	if minutesInt + hoursInt <= 0 || intervalInt <= 0 {
 		messages.Set(c, messages.Error, "Invalid scoring options! Total time and interval must be > 0")
-		return c.Redirect(http.StatusFound, "/admin/scoring")
+		return c.Redirect(http.StatusFound, "/blackteam/scoring")
 	}
 
 	if !sb.Running {
@@ -227,7 +227,7 @@ func startScoring(c echo.Context) error {
 	} else {
 		messages.Set(c, messages.Error, "Scoring is already running!")
 	}
-	return c.Redirect(http.StatusFound, "/admin/scoring")
+	return c.Redirect(http.StatusFound, "/blackteam/scoring")
 }
 
 // ROUTE FOR POST /SCORING/RESTART
@@ -248,12 +248,12 @@ func restartScoring(c echo.Context) error {
 
 	if minutesInt + hoursInt <= 0 || intervalInt <= 0 {
 		messages.Set(c, messages.Error, "Invalid scoring options! Total time and interval must be > 0")
-		return c.Redirect(http.StatusFound, "/admin/scoring")
+		return c.Redirect(http.StatusFound, "/blackteam/scoring")
 	}
 
 	sb.RestartScoring(time.Duration(intervalInt), time.Duration(hoursInt), time.Duration(minutesInt))
 	messages.Set(c, messages.Success, "Scoring restarted!")
-	return c.Redirect(http.StatusFound, "/admin/scoring")
+	return c.Redirect(http.StatusFound, "/blackteam/scoring")
 }
 
 // ROUTE FOR POST /SCORING/STOP
@@ -263,10 +263,10 @@ func stopScoring(c echo.Context) error {
 	} else {
 		messages.Set(c, messages.Success, "Scoring stopped!")
 	}
-	return c.Redirect(http.StatusFound, "/admin/scoring")
+	return c.Redirect(http.StatusFound, "/blackteam/scoring")
 }
 
-// ROUTE FOR POST /ADMIN/USERS/ADD
+// ROUTE FOR POST /blackteam/USERS/ADD
 func addUser(c echo.Context) error {
 
 	// GET ALL FORM PARAMS

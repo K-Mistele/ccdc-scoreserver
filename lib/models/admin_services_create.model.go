@@ -15,7 +15,7 @@ type AdminServicesCreateModel struct {
 // BUILD AN AdminServiceCreateModel AND RETURN IT FOR A ROUTE
 func NewAdminServicesCreateModel(c *echo.Context) (AdminServicesCreateModel, error) {
 
-	log.Debug("Creating /admin/services/create model")
+	log.Debug("Creating /blackteam/services/create model")
 	model := AdminServicesCreateModel{
 		Messages: 					NewMessagesModel(c),
 		AvailableServiceChecks: 	[]string{},

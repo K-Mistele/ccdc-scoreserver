@@ -11,12 +11,12 @@ async function createUser() {
     fd.append('isAdmin', document.getElementById('isAdmin').value);
 
     // ATTEMPT TO CREATE THE SERVICE
-    const response = await fetch(`/user/${username}`, {
+    const response = await fetch(`/blackteam/user/${username}`, {
         method: 'PUT',
         body: fd,
         credentials: 'same-origin'
     })
 
-    window.location.href = '/admin/users/add';
+    window.location.href = '/blackteam/users/add';
 
 }

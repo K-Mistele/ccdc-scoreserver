@@ -1,18 +1,18 @@
 
 // FUNCTION TO DELETE A SERVICE
 async function deleteService(serviceName) {
-    let url = `/service/${serviceName}`
+    let url = `/blackteam/service/${serviceName}`
     let response = await fetch(url, {
         method: 'DELETE',
         credentials: 'same-origin'
     });
-    window.location.href = '/admin/services/configure';
+    window.location.href = '/blackteam/services/configure';
 }
 
 
 // FUNCTION TO UPDATE A SERICE
 async function updateService(serviceName) {
-    const url = `/service/${serviceName}`;
+    const url = `/blackteam/service/${serviceName}`;
 
     // BUILD A FORM DATA OBJECT
     const fd = new FormData();
@@ -30,6 +30,6 @@ async function updateService(serviceName) {
         credentials: 'same-origin'
     });
 
-    window.location.href = '/admin/services/configure';
+    window.location.href = '/blackteam/services/configure';
 
 }

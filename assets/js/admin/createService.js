@@ -30,7 +30,7 @@ window.addEventListener('load', async () => {
 // FUNCTION TO GET THE LIST OF REQUIRED PARAMETERS FOR VARIOUS SERVICE CHECKS
 async function getServiceCheckParams(serviceCheckType) {
 
-    const url = `/servicecheck/${serviceCheckType}/params`;
+    const url = `/blackteam/servicecheck/${serviceCheckType}/params`;
     const results = await fetch(url, {
         credentials: "same-origin",
         method: 'GET'
@@ -110,12 +110,12 @@ async function createService() {
     console.log(fd);
 
     // ATTEMPT TO CREATE THE SERVICE
-    const response = await fetch(`/service/${serviceName}`, {
+    const response = await fetch(`/blackteam/service/${serviceName}`, {
         method: 'PUT',
         body: fd,
         credentials: 'same-origin'
     })
 
-    window.location.href = '/admin/services/add';
+    window.location.href = '/blackteam/services/add';
 
 }
