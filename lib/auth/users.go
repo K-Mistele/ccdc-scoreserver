@@ -89,12 +89,12 @@ func (user *User) Store() error {
 
 }
 
-// RETRIEVE A User
-func (User) Get(uuid string) (User, error) {
+// RETRIEVE A User BY User.UUID
+func (User) GetByUUID(uuid string) (*User, error) {
 
 	client, ctx, err := database.GetClient()
 	if err != nil {
-		return User{}, err
+		return nil, err
 	}
 	defer client.Disconnect(*ctx)
 
@@ -104,7 +104,25 @@ func (User) Get(uuid string) (User, error) {
 	opts := options.FindOne()
 
 	err = collection.FindOne(context.TODO(), bson.M{"uuid": uuid}, opts).Decode(&user)
-	return user, err
+	return &user, err
+}
+
+// RETRIEVE A User BY User.Username
+func GetUserByUsername(username string) (*User, error) {
+
+	client, ctx, err := database.GetClient()
+	if err != nil {
+		return nil, err
+	}
+	defer client.Disconnect(*ctx)
+
+	collection := client.Database(database.Database).Collection(string(database.User))
+
+	user := User{}
+	opts := options.FindOne()
+
+	err = collection.FindOne(context.TODO(), bson.M{"username": username}, opts).Decode(&user)
+	return &user, err
 }
 
 // GET A TOKEN FOR A User
@@ -117,19 +135,8 @@ func Login(username string, password string) (user *User, token string, ok bool)
 
 
 	// SET UP A DATABASE CONNECTION
-	client, ctx, err := database.GetClient()
+	user, err := GetUserByUsername(username)
 	if err != nil {
-		return nil, "", false
-	}
-	defer client.Disconnect(*ctx)
-
-	// RETRIEVE THE USER FROM THE DATABASE
-	collection := client.Database(database.Database).Collection(string(database.User))
-	user = &User{}
-	opts := options.FindOne().SetSort(bson.M{"time": -1})
-	err = collection.FindOne(context.TODO(), bson.M{"username": username}, opts).Decode(user)
-	if err != nil {
-		log.Error(err)
 		return nil, "", false
 	}
 
