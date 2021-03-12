@@ -20,6 +20,17 @@ func index(c echo.Context) error {
 	return c.Render(http.StatusOK, "index.html", model)
 }
 
+// ROUTE FOR LOGIN
+func loginPage(c echo.Context) error {
+
+	model, err  := models.NewLoginModel(&c)
+	if err != nil {
+		log.Criticalf("Error building login model", err)
+	}
+
+	return c.Render(http.StatusOK, "login.html", model)
+}
+
 // ROUTE FOR /SERVICES
 func services(c echo.Context) error {
 	var model models.ServicesModel
