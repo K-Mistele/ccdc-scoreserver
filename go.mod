@@ -6,6 +6,7 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dutchcoders/goftp v0.0.0-20170301105846-ed59a591ce14
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b // indirect
+	github.com/google/uuid v1.2.0
 	github.com/gorilla/sessions v1.2.1
 	github.com/helloyi/go-sshclient v1.0.0
 	github.com/hirochachacha/go-smb2 v1.0.3
@@ -17,7 +18,7 @@ require (
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/orcaman/concurrent-map v0.0.0-20210106121528-16402b402231
 	go.mongodb.org/mongo-driver v1.4.6
-	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83 // indirect
+	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83
 	golang.org/x/net v0.0.0-20210220033124-5f55cee0dc0d // indirect
 	golang.org/x/sys v0.0.0-20210220050731-9a76102bfb43 // indirect
 	golang.org/x/text v0.3.5 // indirect
