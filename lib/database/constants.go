@@ -9,4 +9,5 @@ type Collection string
 const (
 	ScoreboardCheck		Collection = "scoreboardcheck"
 	ServiceScoreCheck	Collection = "servicescorecheck"
+	User				Collection = "user"
 )
