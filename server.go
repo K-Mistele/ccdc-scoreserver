@@ -109,7 +109,7 @@ func main() {
 	e.GET("/logout", logout)
 
 	// CREATE ROUTERS FOR TEAMS
-	blueTeamRouter := e.Group("/blueteam")
+	blueTeamRouter := e.Group("/blueteam", auth.BlueTeamRequired)
 	blackTeamRouter := e.Group("/blackteam", auth.BlackTeamRequired)
 
 	// BLUE TEAM VIEW ROUTES
