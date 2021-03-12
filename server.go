@@ -106,6 +106,7 @@ func main() {
 	e.GET("/", index)
 	e.GET("/login", loginPage)
 	e.POST("/login", login)
+	e.GET("/logout", logout)
 
 	// CREATE ROUTERS FOR TEAMS
 	blueTeamRouter := e.Group("")
