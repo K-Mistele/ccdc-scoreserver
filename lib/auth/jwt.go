@@ -3,8 +3,12 @@ package auth
 import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/k-mistele/ccdc-scoreserver/lib/utils"
+	"github.com/labstack/echo/v4"
+	"net/http"
 	"time"
 )
+// AUTH COOKIE LIFESPAN
+const authCookieLifespan = 6 * time.Hour
 
 // RANDOMLY GENERATE A SECRET TOKEN
 var secretKey = utils.GenerateSecureToken(256)
@@ -54,4 +58,22 @@ func NewJSONWebToken(username string, team Team, admin bool, uuid string ) (stri
 	}
 
 	return tokenString, nil
+}
+
+// SET THE AUTH COOKIE AND MAKE IT LAST FOR HOURS
+func SetAuthCookie(c *echo.Context, token string) {
+	cookie := new(http.Cookie)
+	cookie.Name = "Authorization"
+	cookie.Value = token
+	cookie.Expires = time.Now().Add(authCookieLifespan)
+	(*c).SetCookie(cookie)
+}
+
+// UNSET THE AUTH COOKIE BY SETTING AN EMPTY, EXPIRED VERSION
+func UnsetAuthCookie(c *echo.Context){
+	cookie := new(http.Cookie)
+	cookie.Name = "Authorization"
+	cookie.Value = ""
+	cookie.MaxAge = -1
+	(*c).SetCookie(cookie)
 }
