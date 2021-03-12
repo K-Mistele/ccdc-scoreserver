@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"github.com/dgrijalva/jwt-go"
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/k-mistele/ccdc-scoreserver/lib/utils"
 	"github.com/labstack/echo/v4"
 	"net/http"
@@ -9,6 +9,8 @@ import (
 )
 // AUTH COOKIE LIFESPAN
 const authCookieLifespan = 6 * time.Hour
+const AuthCookieName = "Authorization"
+var JWTSigningMethod = jwt.SigningMethodHS256
 
 // RANDOMLY GENERATE A SECRET TOKEN
 var secretKey = utils.GenerateSecureToken(256)
@@ -37,7 +39,7 @@ func NewJSONWebToken(username string, team Team, admin bool, uuid string ) (stri
 	// CREATE A TOKEN
 	var token *jwt.Token
 	var claims jwtCustomClaims
-	token = jwt.New(jwt.SigningMethodHS256)
+	token = jwt.New(JWTSigningMethod)
 
 	// SET TOKEN CLAIMS
 	claims = jwtCustomClaims{
@@ -50,7 +52,7 @@ func NewJSONWebToken(username string, team Team, admin bool, uuid string ) (stri
 		},
 	}
 
-	token = jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	token = jwt.NewWithClaims(JWTSigningMethod, claims)
 
 	tokenString, err := token.SignedString([]byte(secretKey))
 	if err != nil {
@@ -63,7 +65,7 @@ func NewJSONWebToken(username string, team Team, admin bool, uuid string ) (stri
 // SET THE AUTH COOKIE AND MAKE IT LAST FOR HOURS
 func SetAuthCookie(c *echo.Context, token string) {
 	cookie := new(http.Cookie)
-	cookie.Name = "Authorization"
+	cookie.Name = AuthCookieName
 	cookie.Value = token
 	cookie.Expires = time.Now().Add(authCookieLifespan)
 	(*c).SetCookie(cookie)
@@ -72,8 +74,9 @@ func SetAuthCookie(c *echo.Context, token string) {
 // UNSET THE AUTH COOKIE BY SETTING AN EMPTY, EXPIRED VERSION
 func UnsetAuthCookie(c *echo.Context){
 	cookie := new(http.Cookie)
-	cookie.Name = "Authorization"
+	cookie.Name = AuthCookieName
 	cookie.Value = ""
 	cookie.MaxAge = -1
 	(*c).SetCookie(cookie)
 }
+
