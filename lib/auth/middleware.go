@@ -6,6 +6,7 @@ import (
 	"github.com/k-mistele/ccdc-scoreserver/lib/messages"
 	"github.com/labstack/echo/v4"
 	"net/http"
+	"reflect"
 )
 
 // ERROR TYPES
@@ -47,8 +48,16 @@ func BlackTeamRequired(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 
 		// MAKE SURE THE TOKEN BELONGS TO THE RIGHT TEAM.
-		claims := token.Claims
-		log.Debug(claims)
+		claims := token.Claims.(jwt.MapClaims)
+		log.Debugf("Claims: %v", claims)
+		log.Debug(reflect.TypeOf(claims))
+
+		// REQUIRE BLACK TEAM OR ADMIN
+		if claims["admin"].(bool) != true  && claims["team"].(string) != string(Black){
+			log.Debug("Invalid permissions")
+			messages.Set(c, messages.Error, "You don't have permission to do that!")
+			return c.Redirect(http.StatusFound, "/")
+		}
 		return next(c)
 	}
 }
