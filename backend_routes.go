@@ -2,13 +2,61 @@ package main
 
 import (
 	"fmt"
+	"github.com/k-mistele/ccdc-scoreserver/lib/auth"
 	"github.com/k-mistele/ccdc-scoreserver/lib/messages"
+	"github.com/k-mistele/ccdc-scoreserver/lib/models"
 	"github.com/k-mistele/ccdc-scoreserver/lib/service"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
 	"time"
 )
+
+// LOGIN ROUTE
+func login(c echo.Context) error {
+
+	username := c.FormValue("username")
+	password := c.FormValue("password")
+
+	log.Debugf("Attempting to login user: %s:%s", username, password)
+
+	// LOGIN THE USER
+	user, token, ok := auth.Login(username, password)
+	if !ok {
+
+		// IF THE LOGIN FAILS, DISPLAY A MESSAGE AND REDIRECT THEM TO THE LOGIN PAGE AGAIN
+		messages.Set(c, messages.Error, "Invalid username or password!")
+		model, err := models.NewLoginModel(&c)
+		if err != nil {
+			log.Criticalf("error rendering login model: %s", err)
+		}
+
+		return c.Render(http.StatusOK, "login.html", model)
+	}
+
+	// SET THE AUTH COOKIE, AND THEN CHECK TO SEE WHAT TEAM THEY'RE ON TO DETERMINE WHERE TO REDIRECT TO
+	cookie := new(http.Cookie)
+	cookie.Name = "Authorization"
+	cookie.Value = token
+	cookie.Expires = time.Now().Add(6 * time.Hour)
+	c.SetCookie(cookie)
+
+	// DO THE REDIRECT
+	if user.Team == string(auth.Red) {
+		messages.Set(c, messages.Success, "Welcome, red team member!")
+		return c.Redirect(http.StatusFound, "/")
+	} else if user.Team == string(auth.Blue) {
+		messages.Set(c, messages.Success, "Welcome, blue team member!")
+		return c.Redirect(http.StatusFound, "/services")
+	} else if user.Team == string(auth.Black) {
+		messages.Set(c, messages.Success, "Welcome, black team member!")
+		return c.Redirect(http.StatusFound, "/admin/scoring")
+	} else {
+		messages.Set(c, messages.Error, "Successfully logged in, but unable to determine team!")
+		return c.Redirect(http.StatusFound, "/")
+	}
+
+}
 
 // ROUTE FOR /SERVICECHECK/:NAME/PARAMS
 func getServiceCheckParams(c echo.Context) error {
