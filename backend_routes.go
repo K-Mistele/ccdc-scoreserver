@@ -35,11 +35,7 @@ func login(c echo.Context) error {
 	}
 
 	// SET THE AUTH COOKIE, AND THEN CHECK TO SEE WHAT TEAM THEY'RE ON TO DETERMINE WHERE TO REDIRECT TO
-	cookie := new(http.Cookie)
-	cookie.Name = "Authorization"
-	cookie.Value = token
-	cookie.Expires = time.Now().Add(6 * time.Hour)
-	c.SetCookie(cookie)
+	auth.SetAuthCookie(&c, token)
 
 	// DO THE REDIRECT
 	if user.Team == string(auth.Red) {
@@ -56,6 +52,14 @@ func login(c echo.Context) error {
 		return c.Redirect(http.StatusFound, "/")
 	}
 
+}
+
+// LOG A USER OUT
+func logout(c echo.Context) error {
+
+	auth.UnsetAuthCookie(&c)
+	messages.Set(c, messages.Success, "Successfully logged out!")
+	return c.Redirect(http.StatusFound, "/")
 }
 
 // ROUTE FOR /SERVICECHECK/:NAME/PARAMS
