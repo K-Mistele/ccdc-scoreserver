@@ -8,7 +8,6 @@ import (
 	logging "github.com/op/go-logging"
 	"html/template"
 	"io"
-
 	"os"
 )
 
@@ -121,6 +120,7 @@ func main() {
 	blackTeamRouter.GET("/admin/services/configure", adminConfigureServices)
 	blackTeamRouter.GET("/admin/services/add", adminAddServices)
 	blackTeamRouter.GET("/admin/scoring", adminScoring)
+	blackTeamRouter.GET("/admin/users/add", adminAddUsers)
 
 	/////////////////////////////////////////////////////////////////////////
 	// ROUTES - BACKEND
@@ -140,6 +140,9 @@ func main() {
 	blackTeamRouter.POST("/scoring/start", startScoring)
 	blackTeamRouter.POST("/scoring/restart", restartScoring)
 	blackTeamRouter.POST("/scoring/stop", stopScoring)
+
+	// USER MANAGEMENT
+	blackTeamRouter.PUT("/user/:name", addUser)
 
 	// STATIC DIRECTORY
 	e.Static("/assets", "assets")
