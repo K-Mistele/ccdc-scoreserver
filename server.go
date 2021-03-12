@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/k-mistele/ccdc-scoreserver/lib/auth"
 	"github.com/k-mistele/ccdc-scoreserver/lib/scoreboard"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -30,6 +31,7 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 var sb scoreboard.Scoreboard
 
 func main() {
+
 
 	/////////////////////////////////////////////////////////////////////////
 	// LOGGING
@@ -89,51 +91,55 @@ func main() {
 	e.Renderer = t
 
 	/////////////////////////////////////////////////////////////////////////
+	// INITIAL APP SETUP
+	/////////////////////////////////////////////////////////////////////////
+
+	// CREATE AN INITIAL ADMINISTRATIVE USER
+	err := auth.CreateInitialAdminUser()
+	if err != nil {
+		log.Criticalf("Failed to create initial admin user: %s", err)
+	}
+	/////////////////////////////////////////////////////////////////////////
 	// ROUTES: FRONTEND
 	/////////////////////////////////////////////////////////////////////////
 
-	// DEFINE THE SCOREBOARD ROUTE
+	// DEFINE THE SCOREBOARD ROUTE - PUBLIC
 	e.GET("/", index)
+	e.GET("/login", loginPage)
+	e.POST("/login", login)
 
-	// DEFINE THE SERVICES ROUTES
-	e.GET("/services", services)
+	// CREATE ROUTERS FOR TEAMS
+	blueTeamRouter := e.Group("")
+	blackTeamRouter := e.Group("")
 
-	// DEFINE THE ADMIN SERVICES ROUTE
-	e.GET("/admin/services/configure", adminConfigureServices)
+	// BLUE TEAM VIEW ROUTES
+	blueTeamRouter.GET("/services", services)
+	//blueTeamRouter.GET("/injects", injects)
+	//blueTeamRouter.GET("/reports", breachReports)
 
-	// DEFINE THE ROUTE FOR CREATING SERVICES (FOR ADMINS ONLY)
-	e.GET("/admin/services/add", adminAddServices)
-
-	// DEFINE THE ROUTE FOR MANAGING SCORING FOR ADMINS
-	e.GET("/admin/scoring", adminScoring)
+	// ADMIN GROUP VIEW ROUTES
+	blackTeamRouter.GET("/admin/services/configure", adminConfigureServices)
+	blackTeamRouter.GET("/admin/services/add", adminAddServices)
+	blackTeamRouter.GET("/admin/scoring", adminScoring)
 
 	/////////////////////////////////////////////////////////////////////////
 	// ROUTES - BACKEND
 	/////////////////////////////////////////////////////////////////////////
 
-	// GET THE PARAMETERS IF ANY FOR A SERVICE
-	e.GET("/servicecheck/:name/params", getServiceCheckParams)
+	blackTeamRouter.GET("/servicecheck/:name/params", getServiceCheckParams)
 
 	// CHANGE THE PASSWORD FOR A SERVICE
-	e.POST("/service/:name/password", updateServicePassword)
+	blueTeamRouter.POST("/service/:name/password", updateServicePassword)
 
 	// DELETE A SERVICE
-	e.DELETE("/service/:name", deleteService)
-
-	// UPDATE A SERVICE
-	e.PATCH("/service/:name", updateService)
-
-	// CREATE A SERVICE
-	e.PUT("/service/:name", createService)
+	blackTeamRouter.DELETE("/service/:name", deleteService)
+	blackTeamRouter.PATCH("/service/:name", updateService)
+	blackTeamRouter.PUT("/service/:name", createService)
 
 	// START SCORING
-	e.POST("/scoring/start", startScoring)
-
-	// RESTART SCORING
-	e.POST("/scoring/restart", restartScoring)
-
-	// STOP SCORING
-	e.POST("/scoring/stop", stopScoring)
+	blackTeamRouter.POST("/scoring/start", startScoring)
+	blackTeamRouter.POST("/scoring/restart", restartScoring)
+	blackTeamRouter.POST("/scoring/stop", stopScoring)
 
 	// STATIC DIRECTORY
 	e.Static("/assets", "assets")
