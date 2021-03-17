@@ -82,3 +82,13 @@ func adminAddUsers (c echo.Context) error {
 	}
 	return c.Render(http.StatusOK, "admin_users_add.html", model)
 }
+
+// ROUTE FOR GET /BLACKTEAM/USERS/CONFIGURE
+func adminConfigureUsers (c echo.Context) error {
+	model, err := models.NewAdminUserConfigModel(&c)
+	if err != nil {
+		messages.Set(c, messages.Error, fmt.Sprint(err))
+		log.Error(err)
+	}
+	return c.Render(http.StatusOK, "admin_users_configure.html", model)
+}
