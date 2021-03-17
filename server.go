@@ -122,6 +122,7 @@ func main() {
 	blackTeamRouter.GET("/services/add", adminAddServices)
 	blackTeamRouter.GET("/scoring", adminScoring)
 	blackTeamRouter.GET("/users/add", adminAddUsers)
+	blackTeamRouter.GET("/users/configure", adminConfigureUsers)
 
 	/////////////////////////////////////////////////////////////////////////
 	// ROUTES - BACKEND
@@ -143,7 +144,10 @@ func main() {
 	blackTeamRouter.POST("/scoring/stop", stopScoring)
 
 	// USER MANAGEMENT
-	blackTeamRouter.PUT("/user/:name", addUser)
+	blackTeamRouter.PUT("/user/:username", addUser)
+	blackTeamRouter.POST("/user/:username/password", changeUserPassword)
+	//blackTeamRouter.PATCH("/user/:username", updateUser)
+	//blackTeamRouter.DELETE("/user/:username", deleteUser)
 
 	// STATIC DIRECTORY
 	e.Static("/assets", "assets")
