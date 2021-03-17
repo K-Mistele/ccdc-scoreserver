@@ -157,3 +157,89 @@ func Login(username string, password string) (user *User, token string, ok bool)
 	return user, token, true
 
 }
+
+// RETRIEVE ALL User OBJECTS FROM THE DATABASE
+func GetAllUsers() (*[]User, error) {
+
+	// SET UP DATABASE CONNECTION
+	client, ctx, err := database.GetClient()
+	if err != nil {
+		return nil, err
+	}
+	defer client.Disconnect(*ctx)
+
+	// FETCH ALL USERS
+	var users []User
+	opts := options.Find()
+	collection := client.Database(database.Database).Collection(string(database.User))
+	cursor, err := collection.Find(context.TODO(), bson.M{}, opts)
+	if err != nil {
+		return nil, err
+	}
+	err = cursor.All(context.TODO(), &users)
+	if err != nil {
+		return nil, err
+	}
+	return &users, nil
+
+}
+
+// HANDLE CHANGING A User'S PASSWORD, INCLUDING ABSTRACTING AWAY DATABASE OPERATIONS
+func (user *User) ChangePassword(newPassword string ) error {
+
+	// HASH THE PASSWORD
+	hashBytes, err  := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	// GET A SESSION
+	client, ctx, err := database.GetClient()
+	if err != nil {
+		return err
+	}
+	defer client.Disconnect(*ctx)
+
+	// SET UP A COLLECTION
+	collection := client.Database(database.Database).Collection(string(database.User))
+	opts := options.Update().SetUpsert(true)
+	filter := bson.D{{"username", user.Username}}
+	update := bson.D{{"$set", bson.D{{"hash", string(hashBytes)}}}}
+
+	_, err = collection.UpdateOne(context.TODO(), filter, update, opts)
+	if err != nil {
+		return err
+	}
+	return nil
+
+}
+
+// CHANGE THE PASSWORD OF A User GIVEN A USERNAME INSTEAD OF A User OBJECT - MAY REQUIRE ONE LESS LOOKUP
+func ChangeUserPassword(username string, newPassword string ) error {
+
+	// HASH THE PASSWORD
+	hashBytes, err  := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	// GET A SESSION
+	client, ctx, err := database.GetClient()
+	if err != nil {
+		return err
+	}
+	defer client.Disconnect(*ctx)
+
+	// SET UP A COLLECTION
+	collection := client.Database(database.Database).Collection(string(database.User))
+	opts := options.Update().SetUpsert(true)
+	filter := bson.D{{"username", username}}
+	update := bson.D{{"$set", bson.D{{"hash", string(hashBytes)}}}}
+
+	_, err = collection.UpdateOne(context.TODO(), filter, update, opts)
+	if err != nil {
+		return err
+	}
+	return nil
+
+}
