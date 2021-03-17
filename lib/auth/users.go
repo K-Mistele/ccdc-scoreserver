@@ -243,3 +243,20 @@ func ChangeUserPassword(username string, newPassword string ) error {
 	return nil
 
 }
+
+// DELETE A User GIVEN A USERNAME
+func DeleteUser(username string) error {
+	client, ctx, err := database.GetClient()
+	if err != nil {
+		return err
+	}
+	defer client.Disconnect(*ctx)
+
+	collection := client.Database(database.Database).Collection(string(database.User))
+	opts := options.Delete()
+	_, err = collection.DeleteOne(context.TODO(), bson.D{{"username", username}}, opts)
+	if err != nil {
+		return err
+	}
+	return nil
+}

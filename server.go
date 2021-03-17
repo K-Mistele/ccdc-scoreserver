@@ -147,7 +147,7 @@ func main() {
 	blackTeamRouter.PUT("/user/:username", addUser)
 	blackTeamRouter.POST("/user/:username/password", changeUserPassword)
 	//blackTeamRouter.PATCH("/user/:username", updateUser)
-	//blackTeamRouter.DELETE("/user/:username", deleteUser)
+	blackTeamRouter.DELETE("/user/:username", deleteUser)
 
 	// STATIC DIRECTORY
 	e.Static("/assets", "assets")

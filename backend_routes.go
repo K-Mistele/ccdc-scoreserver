@@ -311,6 +311,29 @@ func addUser(c echo.Context) error {
 
 }
 
+// ROUTE FOR DELETE /BLACKTEAM/USER/:USERNAME
+func deleteUser(c echo.Context) error {
+	username := c.Param("username")
+
+	// PREVENT ADMIN FROM BEING DELETED
+	if username == "admin" {
+		log.Error("user tried to delete the admin user!")
+		messages.Set(c, messages.Error, "You may not delete the administrative user!")
+		return c.Redirect(http.StatusFound, "/blackteam/users/configure")
+	}
+
+	// TRY TO DELETE THE USER
+	err := auth.DeleteUser(username)
+	if err != nil {
+		messages.Set(c, messages.Error, "Failed to delete user")
+		log.Error(err)
+	} else {
+		messages.Set(c, messages.Success, "Successfully deleted user")
+		log.Infof("successfully deleted user %s", username)
+	}
+	return c.Redirect(http.StatusFound, "/blackteam/users/configure")
+}
+
 // ROUTE FOR POST /BLACKTEAM/USER/:USERNAME/PASSWORD
 func changeUserPassword(c echo.Context) error {
 	username := c.Param("username")
