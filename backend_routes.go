@@ -266,7 +266,7 @@ func stopScoring(c echo.Context) error {
 	return c.Redirect(http.StatusFound, "/blackteam/scoring")
 }
 
-// ROUTE FOR POST /blackteam/USERS/ADD
+// ROUTE FOR PUT /BLACKTEAM/USER/:USERNAME
 func addUser(c echo.Context) error {
 
 	// GET ALL FORM PARAMS
@@ -309,4 +309,27 @@ func addUser(c echo.Context) error {
 	return c.String(http.StatusCreated,"")
 
 
+}
+
+// ROUTE FOR POST /BLACKTEAM/USER/:USERNAME/PASSWORD
+func changeUserPassword(c echo.Context) error {
+	username := c.Param("username")
+	password, confirmPassword := c.FormValue("password"), c.FormValue("confirmPassword")
+
+	// MAKE SURE THAT THE PASSWORDS MATCH
+	if password != confirmPassword {
+		log.Debugf("Attempted to change password for %s, but passwords didn't match!", username)
+		messages.Set(c, messages.Error, "Please ensure that the passwords you enter match!")
+		return c.Redirect(http.StatusFound, "/blackteam/users/configure")
+	}
+
+	// UPDATE THE PASSWORD
+	err := auth.ChangeUserPassword(username, password)
+	if err != nil {
+		messages.Set(c, messages.Error, fmt.Sprintf("Failed to change password: %s", err))
+	} else {
+		messages.Set(c, messages.Success, "Successfully changed the password!")
+	}
+
+	return c.Redirect(http.StatusFound, "/blackteam/users/configure")
 }
