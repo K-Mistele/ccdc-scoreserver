@@ -86,6 +86,7 @@
                                         <!-- TODO THIS SHOULD BE A FORM OR JAVASCRIPT ONCLICK HERE -->
                                         <a class="dropdown-item" onclick="deleteUser('{{ .Username }}')"> <span
                                                 class="text-danger">Delete</span></a>
+                                        <a class="dropdown-item" data-toggle="modal" href="#{{ .Username }}-password-change-modal">Change Password</a>
                                     </div>
                                 </div>
                             </div>
